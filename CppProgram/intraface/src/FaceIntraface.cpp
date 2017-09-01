@@ -222,7 +222,7 @@ void FACEManager::sendPicture(cv::Mat frame,yarp::sig::ImageOf<yarp::sig::PixelR
     imageOutPort.write();
 
     mutex.post();
-    cout << "end onRead" << endl;
+    //cout << "end onRead" << endl;
 }
 
 void drawPose(cv::Mat& img, const cv::Mat& rot, float lineL)
@@ -319,10 +319,10 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 	INTRAFACE::HeadPose hp;
 	fa.EstimateHeadPose(X0,hp);
 	yarp::os::Bottle *input = port.read();
-	if(verbositylevel == 1) cout << "Receive command." << endl;
+	//if(verbositylevel == 1) cout << "Receive command." << endl;
 	if(input->get(0).asDouble() == -1.0) // if we receive -1 we close the program
 	 {
-		if(verbositylevel == 1) cout << "Receive command to close the programm." << endl;
+	//	if(verbositylevel == 1) cout << "Receive command to close the programm." << endl;
 		{
 		 FACEManager::close();
 		 return;
@@ -330,31 +330,32 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 	 }
 	 else if(input->get(0).asDouble() == 1.0) // if we receive 0 we go back to initial position
 	 {
-		if(verbositylevel == 1) cout << "Receive ask to send information" << endl;
+	//	if(verbositylevel == 1) cout << "Receive ask to send information" << endl;
 		//	cout << hp.angles[0] << " " << hp.angles[1] << " " << hp.angles[2] << endl;
 		yarp::os::Bottle &out = port.prepare();
 	    out.clear();
 	    out.addDouble(hp.angles[0]);
 	    out.addDouble(hp.angles[1]);
 	    out.addDouble(hp.angles[2]);
-	    cout << "Sending " << out.toString().c_str() << endl;
+	  //  cout << "Sending " << out.toString().c_str() << endl;
 	    
 	    // send the message
 		port.write(true);
 		
 		
-	    cv::Point P1, P2, EL, ER; //EL ER = Centre
+	    //cv::Point P1, P2, EL, ER; //EL ER = Centre
 	    /**************To draw the face *************/
-    	for (int i = 0; i < 9; i++) //eyebrows
-		{
-			if (i==4) continue;
+    	//for (int i = 0; i < 9; i++) //eyebrows
+		//{
+			//if (i==4) continue;
 
-			//val1 = (int)(frame.rows/2)+ (int)X0.at<float>(1,i)-(int)X0.at<float>(1,10) ; 
-			//cout << "val2 = " << val1 << endl;
-			P1 = cv::Point((int)(frame.cols/2)+ (int)X0.at<float>(0,i) /*- (int)X0.at<float>(0,10)*/, (int)(frame.rows/2)+ (int)X0.at<float>(1,i)/*-(int)X0.at<float>(1,10)*/ );
-			P2 = cv::Point((int)(frame.cols/2) + (int)X0.at<float>(0,i+1) /*- (int)X0.at<float>(0,10)*/, (int)(frame.rows/2)+ (int)X0.at<float>(1,i+1)/*-(int)X0.at<float>(1,10)*/ );
-			cv::line(frame/*image*/,P1,P2 , cv::Scalar(0,0,0)/*couleur*/, 3);
-		}/*
+			////val1 = (int)(frame.rows/2)+ (int)X0.at<float>(1,i)-(int)X0.at<float>(1,10) ; 
+			////cout << "val2 = " << val1 << endl;
+			//P1 = cv::Point((int)(frame.cols/2)+ (int)X0.at<float>(0,i) /*- (int)X0.at<float>(0,10)*/, (int)(frame.rows/2)+ (int)X0.at<float>(1,i)/*-(int)X0.at<float>(1,10)*/ );
+			//P2 = cv::Point((int)(frame.cols/2) + (int)X0.at<float>(0,i+1) /*- (int)X0.at<float>(0,10)*/, (int)(frame.rows/2)+ (int)X0.at<float>(1,i+1)/*-(int)X0.at<float>(1,10)*/ );
+			//cv::line(frame/*image*/,P1,P2 , cv::Scalar(0,0,0)/*couleur*/, 3);
+		//}
+		/*
 		for(int i=15; i<17;i++) //noze
 		{
 			
@@ -397,7 +398,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 		// plot head pose
 		
 		//cout << "drawPose" << endl;
-		drawPose(frame, hp.rot, 50);
+		//drawPose(frame, hp.rot, 50);
 		/************END Drawing *************/
 	    
 	    
