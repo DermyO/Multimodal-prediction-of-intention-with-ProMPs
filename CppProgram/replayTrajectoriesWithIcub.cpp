@@ -78,7 +78,7 @@ protected:
 
 public:
  
-    TestReplay(int verbose = 2): RFModule()
+    TestReplay(int verbose = 1): RFModule()
     {
 	    verbositylevel = verbose; 
     }
@@ -88,7 +88,7 @@ public:
 		string name=rf.check("name",Value("test_feedback")).asString().c_str();
         robot=rf.check("robot",Value("icubSim")).asString().c_str();
 		if(robot =="icubSim") trajTime = 0.1;
-		else trajTime = 0.5;
+		else trajTime = 1.5;
 		string part=rf.check("part",Value("left_arm")).asString().c_str();	
         bool swap_x=rf.check("swap_x",Value("false")).asBool();
         bool swap_y=rf.check("swap_y",Value("false")).asBool();    
@@ -173,6 +173,15 @@ public:
             }
             compliance = input->get(3).asDouble(); // compliance ordered by matlab 
             
+			if(input->size() > 4)
+			{
+				for(int i=4;i<8;i++)
+				{
+					od[i-4] = input->get(i).asDouble();
+				}
+			}
+            
+            
 			// read forces given by the wholeBodyDynamicsTree programm            
             for (int i=0; i<6; i++)
             {
@@ -185,7 +194,7 @@ public:
 				else // if it didn't receive forces information return -1 (for example not connected)
 				{	
 					fext[i] = -1;
-					cout << "Read no forces/wrench." << endl;
+					if(verbositylevel ==2) cout << "Read no forces/wrench." << endl;
                 }
 			}
 
@@ -205,24 +214,29 @@ public:
 					//if("icubSim" != robot) client.waitMotionDone(0.04);  // wait until the motion is done and ping at each 0.04 seconds
 					//flagReturn = false;
 				//}else //When the robot has to move
-				//{
-					client.setTrajectoryTime(trajTime);
-					if("icubSim" != robot) client.goToPoseSyncRobot(xd,od);   // send request and wait for reply
-					client.goToPoseRobot(xd,od); // new target is xd,od
-					if("icubSim" != robot) client.waitMotionDone(0.04);
+				//
+					if("icubSim" != robot) 
+					{
+						client.setTrajectoryTime(trajTime);
+						client.goToPoseSyncRobot(xd,od);   // send request and wait for reply
+						client.waitMotionDone(0.04);
+					}
+					else client.goToPoseRobot(xd,od); // new target is xd,od
+					
 				//}
-				
 				client.getRobotPose(x,o); // get current pose as x,o
-				dist = (x[0] -xd[0])*(x[0]-xd[0]) + (x[1] -xd[1])*(x[1]-xd[1]) + (x[2] -xd[2])*(x[2]-xd[2]);
+				dist = (x[0] -xd[0])*(x[0]-xd[0]) + (x[1] -xd[1])*(x[1]-xd[1]) + (x[2] -xd[2])*(x[2]-xd[2]);// +((o[0] -od[0])*(o[0]-od[0]) + (o[1] -od[1])*(o[1]-od[1]) + (o[2] -od[2])*(o[2]-od[2]) + (o[3] -od[3])*(o[3]-od[3]))*5 ;
 				nbIt++;
-			}while(dist > 0.001 && nbIt< 100);
-			
-			if(verbositylevel ==1)
+			}while(dist > 0.01 && nbIt< 100);
+
+			if(verbositylevel ==2)
 			{
-			yInfo("Current position = (%s)",x.toString(3,3).c_str());
-			yInfo("Target position = (%s)",xd.toString(3,3).c_str());
-			yInfo("Compliance      = (%f)\n",compliance);
-		}
+				yInfo("Current position = (%s)",x.toString(3,3).c_str());
+				yInfo("Target position = (%s)",xd.toString(3,3).c_str());
+				yInfo("Current orientation = (%s)",o.toString(4,4).c_str());
+				yInfo("Target orientation = (%s)",od.toString(4,4).c_str());
+				yInfo("Compliance      = (%f)\n",compliance);
+			}
 			//Give to matlab forces information
             Bottle& output = port.prepare();
             output.clear();
