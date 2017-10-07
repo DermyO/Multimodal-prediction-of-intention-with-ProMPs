@@ -197,7 +197,7 @@
       <connection>
           <from>/icub/cartesianController/left_arm/state:o</from>
           <to>/matlab/state</to>
-          <protocol>udp</protocol>
+          <protocol>tcp</protocol>
     </connection>
 
       <connection>
