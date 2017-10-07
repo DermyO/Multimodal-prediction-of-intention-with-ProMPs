@@ -17,7 +17,7 @@ list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
 find_package(OpenCV 2 REQUIRED)#for intraface
 #adding c++11 flags
 set(CMAKE_CXX_FLAGS "-std=c++11")
-set(intraface_LIBRARIES "/home/odermy/software/intraface/lib/libintraface_all.a")
+set(intraface_LIBRARIES "./lib/libintraface_all.a")
 include(YarpInstallationHelpers)
 include(ICUBcontribHelpers)
 include(ICUBcontribOptions)
