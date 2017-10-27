@@ -41,17 +41,18 @@ promp{1} = computeDistribution(t{1}, M, s_bar,c,h);
 promp{2} = computeDistribution(t{2}, M, s_bar,c,h);
 
 connexion = initializeConnection;
-command = 'yarp connect /headPos:o /matlab/write';
+command = 'yarp connect /headPos:o /matlab/HP';
 system(command);
-command = 'yarp connect /matlab/write /headPos:o';
-system(command);
-
-command = 'yarp connect /grabber /faceIntraface/image:i';
-system(command);
-command = 'yarp connect /faceIntraface/image:o /view';
+command = 'yarp connect /matlab/HP /headPos:o';
 system(command);
 
-promp = LearningFacePosition(promp, 20, 50, connexion);
+command = 'yarp connect /matlab/ispeak /icub/speech:rpc';
+
+%promp = LearningFacePosition(promp, 10, 25, connexion);
+promp = LearningFaceTrajectory(promp, 20, connexion);
+
+
+
 
 %priorLookLearning
 %load('Data/testFace.mat')
@@ -65,7 +66,7 @@ while(var_cont==1)
     var_cont = input('1 to continue or other to stop');
 end
 
-%closeConnection(connexion);
+closeConnection(connexion);
 
 
 
