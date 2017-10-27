@@ -12,7 +12,7 @@ warning('off','MATLAB:colon:nonIntegerIndex')
 %%%%%%%%%%%%%%%VARIABLES, please refer you to the readme
 inputName = {'x[m]','y[m]','z[m]', 'a1[°]','a2[°]','a3[°]', 'a4[°]'};
 s_bar=100;
-nbInput = [3 4];%9 %number of input used during the inference (here cartesian position)
+nbInput = [7 9];%9 %number of input used during the inference (here cartesian position)
 
 M(1) = 5; %number of basis functions for the first type of input
 M(2) = 5; %number of basis functions for the second type of input
@@ -31,10 +31,9 @@ for i=1:size(M,2)
     h(i) = c(1)/M(i); %bandwidth of gaussians
 end
 
-connexion = initializeConnectionRealIcub   
+connexion = initializeConnectionRealIcub('withFacePos')   
 %%
 t{1} = recordTrajectoryWithRealIcub(connexion, 'left', nbInput, s_bar);
-t{2} = recordTrajectoryWithRealIcub(connexion, 'front', nbInput, s_bar);
+%t{2} = recordTrajectoryWithRealIcub(connexion, 'front', nbInput, s_bar);
 
-
-closeConnectionRealIcub(connexion);
+closeConnectionRealIcub(connexion,'withFacePos');
