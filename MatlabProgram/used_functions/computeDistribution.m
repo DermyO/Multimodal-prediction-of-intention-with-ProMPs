@@ -12,7 +12,7 @@ function promp = computeDistribution(traj, M, s_ref,c,h)
     promp.sigma_alpha = cov(promp.traj.alpha);
 
     promp.PHI_norm = computeBasisFunction (s_ref,M,promp.traj.nbInput, 1, s_ref,c,h, s_ref);
-    promp.PHI_mean = computeBasisFunction (s_ref,M,promp.traj.nbInput, promp.mu_alpha, s_ref*promp.mu_alpha,c,h, s_ref*promp.mu_alpha);
+    promp.PHI_mean = computeBasisFunction (s_ref,M,promp.traj.nbInput, promp.mu_alpha, s_ref / promp.mu_alpha,c,h, s_ref / promp.mu_alpha);
 
 %     val = 0;
 %     for cpt =1:size(promp.traj.nbInput,2)
@@ -39,8 +39,11 @@ function promp = computeDistribution(traj, M, s_ref,c,h)
     promp.mu_w = mean(listw)';
     promp.sigma_w = cov(listw); %sometimes have < 0 for forces as it is not
     promp.sigma_w = nearestSPD(promp.sigma_w);
-    promp.meanTimes= length(promp.PHI_mean);%mean(promp.traj.totTime);
-    promp.meanInterval = mean(promp.traj.interval);
+    promp.meanTimes= size(promp.PHI_mean,1) / sum(promp.traj.nbInput);%mean(promp.traj.totTime);
+
+    if(isfield(promp.traj, 'interval'))
+       promp.meanInterval = mean(promp.traj.interval);
+    end
 end
    
    
