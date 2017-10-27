@@ -93,6 +93,8 @@ private:
     yarp::os::BufferedPort<yarp::os::Bottle>                            targetOutPort;          //target port
     yarp::os::BufferedPort<yarp::os::Bottle>                            landmarksOutPort;
     
+	bool withCamFace=false;
+
     /******ADD INTRAFACE****/
     yarp::os::BufferedPort <yarp::os::Bottle> port;
 	char detectionModel[63] = "/home/odermy/software/intraface/models/DetectionModel-v1.5.bin";
@@ -110,9 +112,6 @@ private:
 	cv::CascadeClassifier face_cascade;
 	cv::VideoCapture cap;
 	/*****END INTRAFACE *******/
-
-
-
 
     cv::Mat                             imgMat, frame;
     

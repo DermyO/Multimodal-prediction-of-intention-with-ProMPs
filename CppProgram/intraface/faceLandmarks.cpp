@@ -342,25 +342,25 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 void FACEManager::drawLandmarks(cv::Mat &mat, const dlib::full_object_detection &d)
 {
     //draw face contour, jaw
-    //for (unsigned long i = 1; i <= 16; ++i)
-      //  line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
+    for (unsigned long i = 1; i <= 16; ++i)
+        line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
 
     //draw right eyebrow
-    //for (unsigned long i = 18; i <= 21; ++i)
-      //  line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
+    for (unsigned long i = 18; i <= 21; ++i)
+        line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
 
     //draw left eyebrow
-    //for (unsigned long i = 23; i <= 26; ++i)
-      //  line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
+    for (unsigned long i = 23; i <= 26; ++i)
+       line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
 
     //draw nose
-   // for (unsigned long i = 28; i <= 30; ++i)
+    for (unsigned long i = 28; i <= 30; ++i)
         line(mat, cv::Point(d.part(29).x()/2, d.part(29).y()/2), cv::Point(d.part(28).x()/2, d.part(28).y()/2),  color);
 
     //draw nostrils
-  //  line(mat, cv::Point(d.part(30).x()/2, d.part(30).y()/2), cv::Point(d.part(35).x()/2, d.part(35).y()/2),  color);
-   // for (unsigned long i = 31; i <= 35; ++i)
-     //   line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
+    line(mat, cv::Point(d.part(30).x()/2, d.part(30).y()/2), cv::Point(d.part(35).x()/2, d.part(35).y()/2),  color);
+    for (unsigned long i = 31; i <= 35; ++i)
+        line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
 
     //draw right eye
     for (unsigned long i = 37; i <= 41; ++i)
@@ -378,14 +378,14 @@ void FACEManager::drawLandmarks(cv::Mat &mat, const dlib::full_object_detection 
     line(mat, cv::Point(d.part(42).x()/2, d.part(42).y()/2), cv::Point(d.part(47).x()/2, d.part(47).y()/2),  color);
 
     //draw outer mouth
-    //for (unsigned long i = 49; i <= 59; ++i)
-      //  line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
-    //line(mat, cv::Point(d.part(48).x()/2, d.part(48).y()/2), cv::Point(d.part(59).x()/2, d.part(59).y()/2),  color);
+    for (unsigned long i = 49; i <= 59; ++i)
+        line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
+    line(mat, cv::Point(d.part(48).x()/2, d.part(48).y()/2), cv::Point(d.part(59).x()/2, d.part(59).y()/2),  color);
 
     //draw inner mouth
-    //line(mat, cv::Point(d.part(60).x()/2, d.part(60).y()/2), cv::Point(d.part(67).x()/2, d.part(67).y()/2),  color);
-    //for (unsigned long i = 61; i <= 67; ++i)
-       // line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
+    line(mat, cv::Point(d.part(60).x()/2, d.part(60).y()/2), cv::Point(d.part(67).x()/2, d.part(67).y()/2),  color);
+    for (unsigned long i = 61; i <= 67; ++i)
+        line(mat, cv::Point(d.part(i).x()/2, d.part(i).y()/2), cv::Point(d.part(i-1).x()/2, d.part(i-1).y()/2),  color);
 
 }
 //empty line to make gcc happy

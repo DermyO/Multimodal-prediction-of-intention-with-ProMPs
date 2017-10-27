@@ -276,6 +276,13 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 	vector<cv::Rect> faces;
 	face_cascade.detectMultiScale(frame, faces, 1.2, 2, 0, cv::Size(50, 50));
 	//cout << faces.size() << endl;
+	const cv::Scalar color = cv::Scalar(255, 0, 0);
+	for(auto & it:faces)
+	{
+			cv::rectangle(frame, it, color);
+	}
+	//cout << endl;
+	
 
 	// if no face found, do nothing
 	if (faces.empty()) {
@@ -354,7 +361,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 	INTRAFACE::HeadPose hp;
 	fa.EstimateHeadPose(X0,hp);
 	//drawPose(frame, hp.rot, 50);
-	yarp::os::Bottle *input = port.read();
+	//yarp::os::Bottle *input = port.read();
 	//if(verbositylevel == 1) cout << "Receive command." << endl;
 	//if(input->get(0).asDouble() == -1.0) // if we receive -1 we close the program
 	 //{
