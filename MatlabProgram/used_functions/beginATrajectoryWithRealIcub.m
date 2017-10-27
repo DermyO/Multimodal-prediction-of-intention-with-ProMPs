@@ -7,21 +7,21 @@ function [test] = beginATrajectoryWithRealIcub(connexion)
         ok=0;
         %wait for skin contact
         while(ok==0)
-            display('waiting skin contact');
             skinContact;%(30);
         end
 
         %todo : mettre cette fonction avec reelle trajectoire du iCUb
         cpt=1;
         val = 0;
-        threshold = 15;
+        threshold = 10;
         tic;
         clear num num3;
         while(ok==1)  
             connexion.state.clear(); 
             connexion.portState.read(connexion.state); 
-            num3 = str2num(connexion.state)
+            num3 = str2num(connexion.state);
             num(cpt,:) = num3';
+            rt(cpt) = toc;
             cpt=cpt+1;
             %verify contact
             skinContact;%(15);
@@ -30,12 +30,15 @@ function [test] = beginATrajectoryWithRealIcub(connexion)
 
         if(length(num) <10)
             display('error, it is not a real trajectory (too short)');
+            clear cpt num rt
         else 
             finish = 1;
         end
     end
     
     disp('End of the early-observations');
+    test.realTime = rt;
+    test.totTime = cpt -1;
     test.interval = timeEl /length(num);
     test.nbData =length(num); 
     test.yMat = num;

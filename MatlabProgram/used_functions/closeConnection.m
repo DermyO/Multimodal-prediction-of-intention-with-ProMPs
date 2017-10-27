@@ -5,4 +5,5 @@ connection.b.addDouble(-1);
 connection.port.write(connection.b);
 connection.port.close;
 connection.port2.close;
+connection.portHP.close;
 end

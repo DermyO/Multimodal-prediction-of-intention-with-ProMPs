@@ -260,7 +260,14 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 
 	if (frame.rows == 0 || frame.cols == 0)
 	{
-		cout << "frame rows /cols =0" << endl;
+	//	cout << "frame rows /cols =0" << endl;
+				yarp::os::Bottle &out = port.prepare();
+	    out.clear();
+	    out.addDouble(-1);
+	    out.addDouble(-1);
+	    out.addDouble(-1);
+		port.write(true);
+		//cout << "send info" << endl;
 		sendPicture(frame, outImg);
 		return;
 	}			
@@ -268,12 +275,19 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 	// face detection
 	vector<cv::Rect> faces;
 	face_cascade.detectMultiScale(frame, faces, 1.2, 2, 0, cv::Size(50, 50));
-	
+	//cout << faces.size() << endl;
 
 	// if no face found, do nothing
 	if (faces.empty()) {
-		cout << "face is empty" << endl;
+	//	cout << "face is empty" << endl;
 		sendPicture(frame, outImg);
+				yarp::os::Bottle &out = port.prepare();
+	    out.clear();
+	    out.addDouble(-1);
+	    out.addDouble(-1);
+	    out.addDouble(-1);
+//cout << "send info" << endl;
+		port.write(true);
 		return ;
 	}
 	
@@ -281,6 +295,13 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 	if (fa.Detect(frame,*max_element(faces.begin(),faces.end(),compareRect),X0,score) != INTRAFACE::IF_OK)
 		{
 			sendPicture(frame, outImg);
+					yarp::os::Bottle &out = port.prepare();
+	    out.clear();
+	    out.addDouble(-1);
+	    out.addDouble(-1);
+	    out.addDouble(-1);
+		port.write(true);
+	//	cout << "send info" << endl;
 		return;
 	}
 
@@ -290,10 +311,17 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 		face_cascade.detectMultiScale(frame, faces, 1.2, 2, 0, cv::Size(50, 50));
 		// if no face found, do nothing
 		if (faces.empty()) {
-			cout << "before wait... ";
+			//cout << "before wait... ";
 			key = cv::waitKey(5);
-			cout << "after wait." << endl;
+			//cout << "after wait." << endl;
 			sendPicture(frame, outImg);
+					yarp::os::Bottle &out = port.prepare();
+	    out.clear();
+	    out.addDouble(-1);
+	    out.addDouble(-1);
+	    out.addDouble(-1);
+	   // cout << "send info" << endl;
+		port.write(true);
 			return;
 		}
 		
@@ -303,6 +331,13 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 		{
 			 FACEManager::close();
 			 sendPicture(frame, outImg);
+		yarp::os::Bottle &out = port.prepare();
+	    out.clear();
+	    out.addDouble(-1);
+	    out.addDouble(-1);
+	    out.addDouble(-1);
+	 //   cout << "send info" << endl;
+		port.write(true);
 			 return;
 		 }
 		isDetect = false;
@@ -318,18 +353,19 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 	// head pose estimation
 	INTRAFACE::HeadPose hp;
 	fa.EstimateHeadPose(X0,hp);
+	//drawPose(frame, hp.rot, 50);
 	yarp::os::Bottle *input = port.read();
 	//if(verbositylevel == 1) cout << "Receive command." << endl;
-	if(input->get(0).asDouble() == -1.0) // if we receive -1 we close the program
-	 {
-	//	if(verbositylevel == 1) cout << "Receive command to close the programm." << endl;
-		{
-		 FACEManager::close();
-		 return;
-		}
-	 }
-	 else if(input->get(0).asDouble() == 1.0) // if we receive 0 we go back to initial position
-	 {
+	//if(input->get(0).asDouble() == -1.0) // if we receive -1 we close the program
+	 //{
+	////	if(verbositylevel == 1) cout << "Receive command to close the programm." << endl;
+		//{
+		 //FACEManager::close();
+		 //return;
+		//}
+	 //}
+	 //else if(input->get(0).asDouble() == 1.0) // if we receive 0 we go back to initial position
+	 //{
 	//	if(verbositylevel == 1) cout << "Receive ask to send information" << endl;
 		//	cout << hp.angles[0] << " " << hp.angles[1] << " " << hp.angles[2] << endl;
 		yarp::os::Bottle &out = port.prepare();
@@ -337,13 +373,11 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 	    out.addDouble(hp.angles[0]);
 	    out.addDouble(hp.angles[1]);
 	    out.addDouble(hp.angles[2]);
-	  //  cout << "Sending " << out.toString().c_str() << endl;
-	    
-	    // send the message
+	  //  cout << "send info" << endl;
 		port.write(true);
 		
 		
-	    //cv::Point P1, P2, EL, ER; //EL ER = Centre
+	    cv::Point P1, P2, EL, ER; //EL ER = Centre
 	    /**************To draw the face *************/
     	//for (int i = 0; i < 9; i++) //eyebrows
 		//{
@@ -355,56 +389,58 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 			//P2 = cv::Point((int)(frame.cols/2) + (int)X0.at<float>(0,i+1) /*- (int)X0.at<float>(0,10)*/, (int)(frame.rows/2)+ (int)X0.at<float>(1,i+1)/*-(int)X0.at<float>(1,10)*/ );
 			//cv::line(frame/*image*/,P1,P2 , cv::Scalar(0,0,0)/*couleur*/, 3);
 		//}
-		/*
-		for(int i=15; i<17;i++) //noze
-		{
-			
-			P1 = cv::Point((int)(frame.cols/2)+ (int)X0.at<float>(0,i) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,i)-(int)X0.at<float>(1,10) );
-			P2 = cv::Point((int)(frame.cols/2) + (int)X0.at<float>(0,i+1) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,i+1)-(int)X0.at<float>(1,10) );
-			cv::line(frame,P1,P2 , cv::Scalar(0,0,0),3);
-		}
-		for(int i=43; i<48; i++)
-		{
-			P1 = cv::Point((int)(frame.cols/2)+ (int)X0.at<float>(0,i) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,i)-(int)X0.at<float>(1,10) );
-			P2 = cv::Point((int)(frame.cols/2) + (int)X0.at<float>(0,i+1) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,i+1)-(int)X0.at<float>(1,10) );
-			cv::line(frame,P1,P2 , cv::Scalar(0,0,0),3);
-		}
-	
-		P1 = cv::Point((int)(frame.cols/2)+ (int)X0.at<float>(0,48) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,48)-(int)X0.at<float>(1,10) );
-		P2 = cv::Point((int)(frame.cols/2) + (int)X0.at<float>(0,43) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,43)-(int)X0.at<float>(1,10) );
-		cv::line(frame,P1,P2 , cv::Scalar(0,0,0),3);
 		
-		//creation des yeux
-	//	if(count > 200)
-	//	{
-			//P1= cv::Point((int)(frame.cols/2) + 7 - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,19)+(int)X0.at<float>(0,22))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,19) + (int)X0.at<float>(1,19))/2);
-			//P2 = cv::Point((int)(frame.cols/2)+ 7 - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,25)+(int)X0.at<float>(0,28))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,25) + (int)X0.at<float>(1,28))/2);
-			//EL = cv::Point((int)(frame.cols/2) - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,19)+(int)X0.at<float>(0,22))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,19) + (int)X0.at<float>(1,19))/2);
-			//ER = cv::Point((int)(frame.cols/2) - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,25)+(int)X0.at<float>(0,28))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,25) + (int)X0.at<float>(1,28))/2);
-			//cv::line(frame,EL,P1, cv::Scalar(0,0,0), 3);
-			//cv::line(frame,ER,P2, cv::Scalar(0,0,0), 3);
-
-//		}
-		//else{
-		EL = cv::Point((int)(frame.cols/2) - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,19)+(int)X0.at<float>(0,22))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,19) + (int)X0.at<float>(1,19))/2);
-		ER = cv::Point((int)(frame.cols/2) - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,25)+(int)X0.at<float>(0,28))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,25) + (int)X0.at<float>(1,28))/2);
-		cv::circle(frame,EL, 10, cv::Scalar(0,0,0), -1); // frame, centre, radian, couleur
-		cv::circle(frame,ER, 10, cv::Scalar(0,0,0) -1);
+		//for(int i=15; i<17;i++) //noze
+		//{
+			
+			//P1 = cv::Point((int)(frame.cols/2)+ (int)X0.at<float>(0,i) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,i)-(int)X0.at<float>(1,10) );
+			//P2 = cv::Point((int)(frame.cols/2) + (int)X0.at<float>(0,i+1) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,i+1)-(int)X0.at<float>(1,10) );
+			//cv::line(frame,P1,P2 , cv::Scalar(0,0,0),3);
 		//}
-		*/
-		//// head pose estimation
+		//for(int i=43; i<48; i++)
+		//{
+			//P1 = cv::Point((int)(frame.cols/2)+ (int)X0.at<float>(0,i) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,i)-(int)X0.at<float>(1,10) );
+			//P2 = cv::Point((int)(frame.cols/2) + (int)X0.at<float>(0,i+1) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,i+1)-(int)X0.at<float>(1,10) );
+			//cv::line(frame,P1,P2 , cv::Scalar(0,0,0),3);
+		//}
+	
+		//P1 = cv::Point((int)(frame.cols/2)+ (int)X0.at<float>(0,48) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,48)-(int)X0.at<float>(1,10) );
+		//P2 = cv::Point((int)(frame.cols/2) + (int)X0.at<float>(0,43) - (int)X0.at<float>(0,10), (int)(frame.rows/2)+ (int)X0.at<float>(1,43)-(int)X0.at<float>(1,10) );
+		//cv::line(frame,P1,P2 , cv::Scalar(0,0,0),3);
+		
+		////creation des yeux
+	////	if(count > 200)
+	////	{
+			////P1= cv::Point((int)(frame.cols/2) + 7 - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,19)+(int)X0.at<float>(0,22))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,19) + (int)X0.at<float>(1,19))/2);
+			////P2 = cv::Point((int)(frame.cols/2)+ 7 - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,25)+(int)X0.at<float>(0,28))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,25) + (int)X0.at<float>(1,28))/2);
+			////EL = cv::Point((int)(frame.cols/2) - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,19)+(int)X0.at<float>(0,22))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,19) + (int)X0.at<float>(1,19))/2);
+			////ER = cv::Point((int)(frame.cols/2) - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,25)+(int)X0.at<float>(0,28))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,25) + (int)X0.at<float>(1,28))/2);
+			////cv::line(frame,EL,P1, cv::Scalar(0,0,0), 3);
+			////cv::line(frame,ER,P2, cv::Scalar(0,0,0), 3);
+
+////		}
+		////else{
+		//EL = cv::Point((int)(frame.cols/2) - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,19)+(int)X0.at<float>(0,22))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,19) + (int)X0.at<float>(1,19))/2);
+		//ER = cv::Point((int)(frame.cols/2) - (int)X0.at<float>(0,10) +((int)X0.at<float>(0,25)+(int)X0.at<float>(0,28))/2, (int)(frame.rows/2)-(int)X0.at<float>(1,10) +((int)X0.at<float>(1,25) + (int)X0.at<float>(1,28))/2);
+		//cv::circle(frame,EL, 10, cv::Scalar(0,0,0), -1); // frame, centre, radian, couleur
+		//cv::circle(frame,ER, 10, cv::Scalar(0,0,0) -1);
+		////}
+		
+						for (int i = 0 ; i < X0.cols ; i++)
+					cv::circle(frame,cv::Point((int)X0.at<float>(0,i), (int)X0.at<float>(1,i)), 1, cv::Scalar(0,255,0), -1);
+		
+		
+		////// head pose estimation
 		//INTRAFACE::HeadPose hp;
 		//fa.EstimateHeadPose(X0,hp);
-		// plot head pose
-		
-		//cout << "drawPose" << endl;
-		//drawPose(frame, hp.rot, 50);
+		//// plot head pose
+		drawPose(frame, hp.rot, 50);
 		/************END Drawing *************/
 	    
 	    
 	    
 	    
-	}
+	//}
 
 	sendPicture(frame, outImg);
 

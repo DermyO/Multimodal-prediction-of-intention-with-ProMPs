@@ -23,9 +23,11 @@ function promp = LearningFacePosition(promp, varargin)
         system(command);
         command = 'yarp connect /matlab/write /headPos:o';
         system(command);
-            command = 'yarp connect /faceIntraface/image:o /view';
+        command = 'yarp connect /faceIntraface/image:o /view';
         system(command);
-            command = ' yarp connect /grabber /faceIntraface/image:i';
+        command = ' yarp connect /grabber /faceIntraface/image:i';
+        system(command);
+        command = 'yarp connect /matlab/ispeak /icub/speech:rpc';
         system(command);
     end
     
@@ -35,6 +37,11 @@ function promp = LearningFacePosition(promp, varargin)
 
     for i=1:nbTest
         for j=1:length(promp)
+            sentence = ['say "', promp{j}.traj.label, '"']
+            connexion.ispeak.clear();
+            connexion.ispeak.fromString(sentence);
+            connexion.ispeak.fromString(sentence);
+            connexion.port2.write(connexion.ispeak);
             rep = input(['Keep looking at goal ', promp{j}.traj.label , ', and press a key.' ]);
             for t=1:durationTest
                 %ask data

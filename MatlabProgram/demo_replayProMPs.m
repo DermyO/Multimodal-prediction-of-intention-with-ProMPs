@@ -88,7 +88,7 @@ while( cont==1)
     end
     
     %This function replays the trajectory into gazebo.
-    replayProMP(i, promp{i}, connection,s_bar);
+    replayProMP(promp{i}, connection,s_bar);
     cont = input('Do you want to replay? (yes=1, no=0)');
 end
 
