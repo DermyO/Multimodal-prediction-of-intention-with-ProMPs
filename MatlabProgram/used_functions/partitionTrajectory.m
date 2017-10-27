@@ -8,23 +8,42 @@ function [train, test] = partitionTrajectory(t, percent, percentData, refTime,va
 %percentData: number of data that will be used as "observed data" for the inference
 %refTime : s_bar: the reference total number of sample for a trajectory
 %varargin: use only if percent=1: you can precise the index of the trajectory test.
-
-if(percent==1)%want only one test 
+    ind = ceil(rand(1)*t.nbTraj);
+    flag_tmp = 0;
     if(~isempty(varargin))
-        ind = varargin{1};
-    else
-        ind = ceil(rand(1)*t.nbTraj);
+        for cpt=1:1:length(varargin)    
+            
+            if(flag_tmp ==1)
+                flag_tmp =0;
+                continue;
+            end
+            if(isnumeric(varargin{cpt}))
+                ind = varargin{cpt};
+            elseif(strcmp(varargin{cpt},'Interval') ==1)
+                cpt = cpt+1;
+                interval = varargin{cpt};
+                flag_tmp =1;
+            end
+        end
     end
+    if(~exist ('interval', 'var'))
+        interval = [1:t.nbInput(1)];% [1:ceil((percentData/100)*t.totTime(ind))];
+    end
+if(percent==1)%want only one test 
     test{1}.y = t.y{ind};
     test{1}.yMat = t.yMat{ind};
     test{1}.totTime = t.totTime(ind);
     test{1}.alpha = refTime / test{1}.totTime;
     test{1}.partialTraj = [];
     test{1}.nbData = ceil((percentData/100)*t.totTime(ind));
-    %test{1}.realTime = t.realTime{ind};
-    test{1}.interval = t.interval(ind);
-
-    for i=1:t.nbInput(1)
+    if (isfield(t, 'realTime'))
+        test{1}.realTime = t.realTime{ind};
+    end
+    if(isfield(t, 'interval'))
+        test{1}.interval = t.interval(ind);
+    end
+    
+    for i=interval
        test{1}.partialTraj = [test{1}.partialTraj; t.yMat{ind}(1:test{1}.nbData,i)];
     end
     train.nbTraj = t.nbTraj -1;
@@ -35,20 +54,30 @@ if(percent==1)%want only one test
             train.y{i} =  t.y{i};
             train.yMat{i} = t.yMat{i};
             train.totTime(i) = t.totTime(i);
-%            train.realTime{i} = t.realTime{i};
-            train.interval(i) = t.interval(i);
+            if(isfield(t, 'interval'))
+                train.interval(i) = t.interval(i);
+            end
+            if(isfield(t, 'realTime'))
+                train.realTime{i} = t.realTime{i};
+            end
+    
     end
     for i=ind+1:t.nbTraj
             train.alpha(i-1) = t.alpha(i);
             train.y{i-1} =  t.y{i};
             train.yMat{i-1} = t.yMat{i};
             train.totTime(i-1) = t.totTime(i);
-           % train.realTime{i-1} = t.realTime{i};
-            train.interval(i-1) = t.interval(i);
+            
+            if(isfield(t, 'realTime'))
+                train.realTime{i-1} = t.realTime{i};
+            end
+            if(isfield(t, 'interval'))
+                train.interval(i-1) = t.interval(i);
+            end
     end
     
 else
-     nbTrain = ceil((percent/100)*t.nbTraj)
+     nbTrain = ceil((percent/100)*t.nbTraj);
      nbTest = t.nbTraj - nbTrain;
      train.nbTraj = nbTrain;
      train.nbInput = t.nbInput;
@@ -73,7 +102,7 @@ else
         test{i}.interval = t.interval(ind);
 
         test{i}.partialTraj = [];
-        for j=1:t.nbInput(1)
+        for j=interval
             test{i}.partialTraj = [test{i}.partialTraj; t.yMat{ind}(1:test{i}.nbData,j)];
         end
     end

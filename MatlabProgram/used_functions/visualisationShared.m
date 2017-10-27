@@ -31,7 +31,7 @@ if(isa(col1, 'char'))
 else
     %for i=1:x 
      i=z;
-     shadedErrorBar(vectX',meanV(i,:),stdV(i,:), 'Color', col1, 0.01); hold on;
+     shadedErrorBar(vectX',meanV(i,:),stdV(i,:), {'color', col1}, 0.01); hold on;
       
     %end
 end
