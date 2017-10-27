@@ -104,7 +104,7 @@ elseif(isInterval==1)
     cpt=0;
     for l=interval  
         cpt=cpt+1;
-        subplot(length(interval)/2,2,cpt)
+        subplot(ceil(length(interval)/2),2,cpt)
         for i=1:traj.nbTraj     
       
             fig22 = visualisation(traj.y{i},length(list),traj.totTime(i), l, col,fig22);hold on;
@@ -118,16 +118,16 @@ elseif(isInterval==1)
     end        
 else
 
-    fig22 = figure(valFigure);
-    set(gca, 'fontsize', 18);
+fig22 = figure(valFigure);
+set(gca, 'fontsize', 18);
 
-    for l=1:traj.nbInput(1)  
-        subplot(traj.nbInput(1),1,l)
-        for i=1:traj.nbTraj     
-            fig22 = visualisation(traj.y{i},length(list),traj.totTime(i), l, col,fig22);hold on;
-        end
+for l=1:traj.nbInput(1)  
+	subplot(traj.nbInput(1),1,l)
+    for i=1:traj.nbTraj     
+    	fig22 = visualisation(traj.y{i},length(list),traj.totTime(i), l, col,fig22);hold on;
+    end
 
-         ylabel(list{l}, 'fontsize', 24);
+    ylabel(list{l}, 'fontsize', 24);
 
          if(l==traj.nbInput(1))
               xlabel('Time [s]', 'fontsize', 24);

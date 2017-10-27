@@ -50,26 +50,23 @@ if(length(promp)==3) %TODO faire mieux
         fr = plot(xx, norm, 'g');
         norm = normpdf(xx,test.mu(3), test.sigma(3,3));
         ft = plot(xx, norm, 'k');
-    elseif(strcmp(varargin{1}, 'test2')==1)
-                       test = varargin{2};
- 
-        xx = [1:20 101:120 201:220 301:320 401:420];
-        drstring = char('test');
-        %origin= [promp{1}.traj.label ; promp{2}.traj.label ; promp{3}.traj.label ; char('test')];
-        promp{1}.traj.label
-                origin= {'top' ; 'front' ; 'bottom' ; 'test'};
+        elseif(strcmp(varargin{1}, 'test2')==1)
+		test = varargin{2};
+        	xx = [1:20 101:120 201:220 301:320 401:420];
+        	drstring = char('test');
+        	%origin= [promp{1}.traj.label ; promp{2}.traj.label ; promp{3}.traj.label ; char('test')];
+                origin= {'Left' ; 'front' ; 'Right' ; 'test'};
 
-        subplot(3,1,1);
-                
-        boxplot([promp{1}.facePose.data(xx,1) promp{2}.facePose.data(xx,1) promp{3}.facePose.data(xx,1) test.data(:,1)], origin);
-        ylabel('R');
-        subplot(3,1,2);
-        boxplot([promp{1}.facePose.data(xx,2) promp{2}.facePose.data(xx,2) promp{3}.facePose.data(xx,2) test.data(:,2)], origin);
-        ylabel('P');
-        subplot(3,1,3);
-        boxplot([promp{1}.facePose.data(xx,3) promp{2}.facePose.data(xx,3) promp{3}.facePose.data(xx,3) test.data(:,3)], origin);
-        ylabel('Y');
-    end
+        	subplot(3,1,1);
+        	boxplot([promp{1}.facePose.data(xx,1) promp{2}.facePose.data(xx,1) promp{3}.facePose.data(xx,1) test.data(:,1)], origin);
+        	ylabel('R');
+        	subplot(3,1,2);
+        	boxplot([promp{1}.facePose.data(xx,2) promp{2}.facePose.data(xx,2) promp{3}.facePose.data(xx,2) test.data(:,2)], origin);
+        	ylabel('P');
+        	subplot(3,1,3);
+        	boxplot([promp{1}.facePose.data(xx,3) promp{2}.facePose.data(xx,3) promp{3}.facePose.data(xx,3) test.data(:,3)], origin);
+		ylabel('Y');
+	end
 elseif(length(promp)==2) %TODO faire mieux
     if(isempty(varargin))
         subplot(2,1,1);
