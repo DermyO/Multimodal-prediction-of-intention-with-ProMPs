@@ -53,6 +53,7 @@ if(isInterval==1)
     varPrior = infTraj.PHI*1.96*sqrt(diag(promp{i}.sigma_w ));
     posterior = infTraj.PHI*infTraj.mu_w;
     varPosterior = infTraj.PHI*1.96*sqrt(diag(infTraj.sigma_w));
+    cpt2 = 0;
 	for vff=intervalPlot
         cpt=cpt+1;
         subplot(subplotInfo,subplotInfo2,cpt);
@@ -74,7 +75,7 @@ if(isInterval==1)
         end
         otherP = size(nameFig,2);
 
-        nameFig = visualisation(prior - varPrior, sum(nbInput), infTraj.timeInf, vff, 'k', nameFig,[intervalInf:intervalInf:RTInf]);
+        nameFig = visualisation(prior - varPrior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,[intervalInf:intervalInf:RTInf]);
 
         nameFig = visualisation(prior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,[intervalInf:intervalInf:RTInf]);
         prevG = size(nameFig,2);
@@ -90,8 +91,8 @@ if(isInterval==1)
         %visualisation2(test.yMat,sum(nbInput), test.totTime,vff, ':k', 1, nameFig);hold on;
         dtG = size(nameFig,2);
         if(ismember(vff,dataReco))%<= nbInput(1))
-            init = dataReco(1);
-            nameFig(size(nameFig,2) + 1) = plot([interval:interval:test.nbData*interval],test.partialTraj(1+ test.nbData*(vff-init):test.nbData*(vff-init +1)),'.-k','linewidth',3);
+            cpt2 = cpt2 +1 ;
+            nameFig(size(nameFig,2) + 1) = plot([interval:interval:test.nbData*interval],test.partialTraj(1+ test.nbData*(cpt2-1):test.nbData*(cpt2)),'.-k','linewidth',3);
            dnG = size(nameFig,2);
         end
 

@@ -35,7 +35,7 @@ function [value,bestproba, xest] = computeBestAlpha(ProMP, obsTraj, expNoise, nb
         
         %computes the expected alpha using the model
         variation = abs(obsTraj.yMat(nbData,1:nbInputs(1))  - obsTraj.yMat(1,1:nbInputs(1)));
-        basis = AlphaBasis(variation);
+        basis = AlphaBasis(variation, 'nbTypeData',nbInputs(1));
         value  = basis*ProMP.w_alpha;
         if(floor(refTime / value )<nbData) %if the model found a too short alpha phasis, we force the trajectory to spend as least nbData sample times
             value = refTime /nbData;
@@ -65,7 +65,6 @@ function [value,bestproba, xest] = computeBestAlpha(ProMP, obsTraj, expNoise, nb
                     value = proba(i,2);
                     xest = x;
                     cpt = cpt+1;
-                    
 %%%Plot for debugging purpose:
 %             subplot(1,3,1);hold on;
 %             fig(length(fig)+1) = plot(u(1:nbData),':k');

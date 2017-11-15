@@ -1,4 +1,4 @@
-function w_alpha = computeAlpha(nbData,t,nbInput)
+function w_alpha = computeAlpha(nbData,t,nbInput,varargin)
 %computeAlpha is not finish yet.
 %computeAlpha allows to compute the link between the variation in the first
 %nbData and the alpha value.
@@ -29,7 +29,7 @@ for typeTraj=1:length(t) % for all type of trajectories
     end
     
     %computes the RBF for the alpha model
-    RBF{typeTraj} = AlphaBasis(t{typeTraj}.velVar);
+    RBF{typeTraj} = AlphaBasis(t{typeTraj}.velVar, 'nbTypeData', nbInput(1));
     sizeNoise{typeTraj} = size(RBF{typeTraj}'*RBF{typeTraj});
     %computes the w parameter of the model
     w_alpha{typeTraj} =  (RBF{typeTraj}'*RBF{typeTraj}+1e-12*eye(sizeNoise{typeTraj})) \ (RBF{typeTraj})' *t{typeTraj}.alpha(logical(mask{typeTraj}))';        

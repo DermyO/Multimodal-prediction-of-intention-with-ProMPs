@@ -11,7 +11,7 @@ function PHI = computeBasisFunction(s_ref,M, nbInput, alpha, totalTime, c, h, nb
 % h: bandwith of the RBF
 % nbData: normally = totalTime. But if you want a subpart of the matrix,
 % you can specify this number.
-	for k=1:size(M,2)
+	for k=1:length(M)
         for i = 1 : M(k)
 	        center(k,i) = c(k)*(i-1); 
         end
@@ -37,7 +37,7 @@ function PHI = computeBasisFunction(s_ref,M, nbInput, alpha, totalTime, c, h, nb
 	    display('matrix!!')
 	    
 	    for t=1:nbData
-	        for i=1:size(M,2)
+	        for i=1:length(M)
 	            for j =1:nbInput(i)
 	               if and(i==1,j==1)
 	                   PHI{t} = phi{i}(t,:);
@@ -48,7 +48,7 @@ function PHI = computeBasisFunction(s_ref,M, nbInput, alpha, totalTime, c, h, nb
 	        end
 	    end
 	else
-	    for i=1:size(M,2)
+	    for i=1:length(M)
 	        for j =1:nbInput(i)
 	           if and(i==1,j==1)
 	               PHI = phi{i}(1:nbData,:);

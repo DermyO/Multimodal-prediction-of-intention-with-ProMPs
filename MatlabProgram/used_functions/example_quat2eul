@@ -1,0 +1,28 @@
+SpinCalc('QtoEA321',t{1}.yMat{1}(1,4:7),0,0)
+for i=1:2
+for j=1:t{i}.nbTraj
+for k = 1:t{i}.totTime(j)
+mmata{i,j}(k,1:3) =SpinCalc('QtoEA321',t{i}.yMat{j}(k,4:7),0,0);
+end
+end
+end
+for i=1:2
+for j=1:t{i}.nbTraj
+for k = 1:t{i}.totTime(j)
+t{i}.yMat{j}(k,4:6) = mmata{i,j}(k,:);
+end
+end
+end
+for i=1:2
+for j=1:t{i}.nbTraj
+t{i}.yMat{j}(:,7) = [];
+end
+end
+for j=1:t{i}.nbTraj
+for i=1:2
+for j=1:t{i}.nbTraj
+t{i}.y{j} = reshape(t{i}.yMat{j}, [], numel(t{i}.yMat{j}),1)'
+end
+end
+t{1}.nbInput = 11
+t{2}.nbInput = 11
