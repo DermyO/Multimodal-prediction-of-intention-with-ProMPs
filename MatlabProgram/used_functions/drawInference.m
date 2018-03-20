@@ -76,6 +76,7 @@ if(isInterval==1)
         otherP = size(nameFig,2);
 
         nameFig = visualisation(prior - varPrior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,[intervalInf:intervalInf:RTInf]);
+        nameFig = visualisation(prior + varPrior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,[intervalInf:intervalInf:RTInf]);
 
         nameFig = visualisation(prior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,[intervalInf:intervalInf:RTInf]);
         prevG = size(nameFig,2);
@@ -121,8 +122,9 @@ else
                 interval =  test.realTime;%(test.totTime) / test.totTime;
                 RTInf = (interval(test.nbData) ) / test.nbData;%infTraj.timeInf*0.01;
             else
+                promp{i}.meanInterval = 0.01
                 RTInf =    promp{i}.meanInterval;
-                                interval =  [promp{i}.meanInterval:promp{i}.meanInterval:promp{i}.meanInterval*test.nbData];
+                interval =  [0:promp{i}.meanInterval:promp{i}.meanInterval*test.nbData];
 
             end
         
@@ -145,18 +147,28 @@ else
                 clear varOtherPrior otherPrior;
                 varOtherPrior = infTraj.PHI*1.96*sqrt(diag(promp{tmp}.sigma_w ));
                 otherPrior = infTraj.PHI*promp{tmp}.mu_w;
-                visualisationShared(otherPrior, varOtherPrior, sum(nbInput), infTraj.timeInf,  vff, 'g', nameFig, 'vecX',intervalInf);
-                nameFig = visualisation(otherPrior, sum(nbInput), infTraj.timeInf, vff, 'g', nameFig,intervalInf);
+                if(isfield(test, 'type'))
+                    if (test.type ~= infTraj.reco) && (tmp ==test.type)
+                        visualisationShared(otherPrior, varOtherPrior, sum(nbInput), infTraj.timeInf,  vff, 'm', nameFig, 'vecX',intervalInf);
+                         nameFig = visualisation(otherPrior, sum(nbInput), infTraj.timeInf, vff, 'm', nameFig,intervalInf);
+                        otherG = size(nameFig,2);
+                    else
+                        visualisationShared(otherPrior, varOtherPrior, sum(nbInput), infTraj.timeInf,  vff, 'g', nameFig, 'vecX',intervalInf);
+                        nameFig = visualisation(otherPrior, sum(nbInput), infTraj.timeInf, vff, 'g', nameFig,intervalInf);
+                        otherP = size(nameFig,2);
+                    end
+                 else        
+                    visualisationShared(otherPrior, varOtherPrior, sum(nbInput), infTraj.timeInf,  vff, 'g', nameFig, 'vecX',intervalInf);
+                    nameFig = visualisation(otherPrior, sum(nbInput), infTraj.timeInf, vff, 'g', nameFig,intervalInf);
+                    otherP = size(nameFig,2);
+                 end
             end
         end
-        otherP = size(nameFig,2);
-
-        
         
         if(isfield(test, 'realTime'))%isfield(test, 'interval') && 
                 nameFig(size(nameFig,2) + 1) = plot( test.realTime -test.realTime(1) ,test.yMat(:,vff), ':k', 'linewidth', 2); %
             else
-                nameFig(size(nameFig,2) + 1) = plot( [RTInf:RTInf:test.totTime*RTInf], test.yMat(:,vff), ':k', 'linewidth', 2);
+                nameFig(size(nameFig,2) + 1) = plot( [0:RTInf:(test.totTime-1)*RTInf], test.yMat(:,vff), ':k', 'linewidth', 2);
             end
             %visualisation2(test.yMat,sum(nbInput), test.totTime,vff, ':k', 1, nameFig);hold on;
             dtG = size(nameFig,2);
@@ -178,7 +190,15 @@ else
              set(gca, 'fontsize', 20)
     end
     if(exist('dtG'))
+        if(isfield(test, 'type'))
+            if(test.type == infTraj.reco)
+                legend(nameFig(1,[dtG,otherP, dnG, prevG, newG]),'ground truth', 'other prior', 'observations','prior proMP', 'good prediction', 'Location', 'southeast');
+            else
+                legend(nameFig(1,[dtG,otherG, otherP, dnG, prevG, newG]),'ground truth', 'expected ProMP','other prior', 'observations','prior proMP', 'bad prediction', 'Location', 'southeast');
+            end
+        else
             legend(nameFig(1,[dtG,otherP, dnG, prevG, newG]),'ground truth', 'other prior', 'observations','prior proMP', 'prediction', 'Location', 'southeast');
+        end
     else
             legend(nameFig(1,[otherP, dnG, prevG, newG]), 'other prior', 'observations','prior proMP', 'prediction', 'Location', 'southeast');
     end

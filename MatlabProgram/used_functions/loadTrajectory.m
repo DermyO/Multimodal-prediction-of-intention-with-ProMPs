@@ -119,7 +119,9 @@
         %val = [];
         %to avoid problem after
        	trajectory.totTime(i) =size(data{i},1) ; %total number of samples
-        trajectory.interval(i) = (trajectory.realTime{i}(trajectory.totTime(i)) - trajectory.realTime{i}(1)) /trajectory.totTime(i); %time inteval between sample
+        if(isfield(trajectory, 'realTime'))
+            trajectory.interval(i) = (trajectory.realTime{i}(trajectory.totTime(i)) - trajectory.realTime{i}(1)) /trajectory.totTime(i); %time inteval between sample
+        end
         trajectory.yMat{i} =  data{i}(1:trajectory.totTime(i),:); %matrice that contains trajectory input (x= number of sample, y= number of input)
         for j = 1: sum(trajectory.nbInput)
            trajectory.y{i}=  [ trajectory.y{i} ; data{i}(1:trajectory.totTime(i),j) ]; %vector that contains trajectory inputs

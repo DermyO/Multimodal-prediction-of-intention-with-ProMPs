@@ -22,7 +22,7 @@ if(~isempty(varargin))
     end
 end
 
-if(isInterval)
+if(isInterval==1)
     %Plot the total trial and the data we have
 nameFig = figure;
 cpt=0;
