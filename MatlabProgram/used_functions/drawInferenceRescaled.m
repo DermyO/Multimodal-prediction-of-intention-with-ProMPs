@@ -31,7 +31,7 @@ cpt=0;
     titleFig = promp{i}.traj.label;
 
 
-for vff=interval;
+for vff=interval
     cpt=cpt+1;
     subplot(ceil(length(interval)/2),2,cpt);
     
@@ -67,7 +67,11 @@ for vff=interval;
          set(gca, 'fontsize', 20)
          
 end
-legend(nameFig(1,[dtG, dnG, prevG, newG]),'real trajectory', 'observations','prior proMP', 'prediction', 'Location', 'northwest' );
+if(exist('dnG','var'))
+    legend(nameFig(1,[dtG, dnG, prevG, newG]),'real trajectory', 'observations','prior proMP', 'prediction', 'Location', 'northwest' );
+else
+    legend(nameFig(1,[dtG, prevG, newG]),'real trajectory', 'prior proMP', 'prediction', 'Location', 'northwest' );
+end
    if(knownTitle ==1)
        title(titleFig);
    end

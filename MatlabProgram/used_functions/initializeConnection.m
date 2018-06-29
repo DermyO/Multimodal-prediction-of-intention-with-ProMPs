@@ -13,7 +13,7 @@ function connection = initializeConnection
     connection.port2.close;
     
     
-       connection.portHP=Port;
+    connection.portHP=Port;
     connection.portHP.close;
 
     disp('Going to open port /matlab/write');
