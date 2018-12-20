@@ -55,7 +55,7 @@ expNoise = 0.00001;
 
 error = zeros(5,70);
 vall= 0;
-for nbPercent =60%[20:20:100]
+for nbPercent =[20:20:100]
     nbDist=1;
     vall= vall+1;
     percentData = nbPercent; %number of data max with what you try to find the correct movement
@@ -105,8 +105,11 @@ for nbPercent =60%[20:20:100]
     NRMSD(vall) = RMSD(vall) / mean(abs(meanTraj));
 end
 
-namee = ['statXsensWithoutLS_60Percent']
 
+
+%namee = ['statXsensWithoutLS'+]
+
+%save(namee)
 
 
 set(0,'DefaultLineLinewidth',1)
