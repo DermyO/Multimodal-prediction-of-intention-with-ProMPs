@@ -97,9 +97,9 @@ for nbPercent =[20:20:100]
 end
 
 
-namee = ['statXsensWithoutLS'+]
+%namee = ['statXsensWithoutLS'+]
 
-save(namee)
+%save(namee)
 
 
 

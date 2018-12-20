@@ -29,7 +29,7 @@ for nbInput=69%2:3:69
     M(1) = 10; %number of basis functions for the first type of input
     
     %variable tuned to achieve the trajectory correctly
-    expNoise = 0.1%0.00001;
+    expNoise = 0.00001;
     percentData = 20; %number of data max with what you try to find the correct movement
     
     %%%%%%%%%%%%%% END VARIABLE CHOICE
@@ -57,8 +57,8 @@ for nbInput=69%2:3:69
 %         for vall=1:7
 %             drawSceleton(t{vall}.yMat{1});
 %         end
-%         
-%     end
+%          
+%      end
     % %plot recoverData
     % drawRecoverData(t{1}, inputName, 'Specolor','b','namFig', 1,'Interval',[1:6]);
     % drawRecoverData(t{2}, inputName, 'Specolor','r','namFig',1,'Interval',[1:6]);
@@ -151,6 +151,7 @@ for nbInput=69%2:3:69
             nameFigure = ['inference_l5_', typeTraj{trial}]
             print(nameFigure,'-dsvg')
         end
+        infTraj.nbData = teste{1}.nbData
         listInfTraj{trial} = infTraj;
         
         meanTraj =promp{trial}.PHI_norm*promp{trial}.mu_w;
@@ -158,7 +159,8 @@ for nbInput=69%2:3:69
         
         posterior = infTraj.PHI*infTraj.mu_w;
         posterior2 = reshape(posterior,70,69);
-      %  drawSceleton(meanTraj2, posterior2)
+        listPosterior{trial} = posterior2;
+        %drawSceleton(meanTraj2, posterior2,teste{1}.nbData)
         
         
         clear infTraj alphaTraj type x w teste
@@ -166,13 +168,14 @@ for nbInput=69%2:3:69
 
 end
 %%
-for trial=1%:7
+for trial=1:7
         meanTraj =promp{trial}.PHI_norm*promp{trial}.mu_w;
         meanTraj2 = reshape(meanTraj,70,69);
         
         posterior = listInfTraj{trial}.PHI*listInfTraj{trial}.mu_w;
         posterior2 = reshape(posterior,70,69);
-        drawSceleton(meanTraj2, posterior2) 
+        drawSceleton(meanTraj2, posterior2,listInfTraj{trial}.nbData) ;
+        close all;
 end
 
 
