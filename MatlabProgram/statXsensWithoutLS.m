@@ -17,6 +17,12 @@ s_bar=70;
 cpt_nbInput = 0;
 nbInput=69 %Number of input used during the inference
 cpt_nbInput = cpt_nbInput + 1
+
+
+tElapsed = zeros(7);
+ %cpt2=0
+%for nbInput = [1:10:69]
+ %   cpt2 = cpt2 +1;
 for i=1:nbInput
     inputName{i} = strcat('Dim',num2str(i));
 end
@@ -49,12 +55,15 @@ expNoise = 0.00001;
 
 error = zeros(5,70);
 vall= 0;
-for nbPercent =[20:20:100]
+for nbPercent =60%[20:20:100]
     nbDist=1;
     vall= vall+1;
     percentData = nbPercent; %number of data max with what you try to find the correct movement
+    cpt = 0;
+
     for mov = 1:7
         for trial = 1%:10
+            cpt= cpt+1;
             for k=1:7
                 if(k==mov)
                     [train{k},test] = partitionTrajectory(t{k},1,percentData,s_bar,trial);
@@ -73,11 +82,11 @@ for nbPercent =[20:20:100]
             promp{5}.w_alpha= w{5};
             promp{6}.w_alpha= w{6};
             promp{7}.w_alpha= w{7};
-
+            tstart = tic;
             %Recognition of the movement
-            [alphaTraj,type, x] = inferenceAlpha(promp,test{1},M,s_bar,c,h,test{1}.nbData, expNoise, 'ML');
-            infTraj = inference(promp, test{1}, M, s_bar, c, h, test{1}.nbData, expNoise, alphaTraj, nbInput);
-
+            %[alphaTraj,type, x] = inferenceAlpha(promp,test{1},M,s_bar,c,h,test{1}.nbData, expNoise, 'ML');
+            [infTraj, type] = inference(promp, test{1}, M, s_bar, c, h, test{1}.nbData, expNoise, 1, nbInput);
+            tElapsed(cpt) = toc(tstart);
             if(type ~= mov)
                 error(vall, (mov-1)*10 + trial) = 1;
             else
@@ -96,21 +105,40 @@ for nbPercent =[20:20:100]
     NRMSD(vall) = RMSD(vall) / mean(abs(meanTraj));
 end
 
-
-namee = ['statXsensWithoutLS'+]
-
-save(namee)
+namee = ['statXsensWithoutLS_60Percent']
 
 
 
+set(0,'DefaultLineLinewidth',1)
+set(0,'DefaultAxesFontSize',24)
+            set(gca, 'fontsize', 24);
 
-
-
-
-
-
-
-
+%%
+figure;
+val= zeros(5,7)
+cpt = 0;
+colorr = ['b','r','g','k','m','c',[0.6 0.4 1]]
+for i = [1:10:69]
+    cpt = cpt+1
+    val = squeeze(tElapsed(cpt,1:5,:));
+   tmp(cpt)= shadedErrorBar([20:20:100],mean(val'),std(val'),colorr(cpt),1);hold on;
+end
+xlabel('Observation [%]','fontsize',24)
+ylabel('Time [s]','fontsize',24)
+legend(tmp,'LS=1','LS=11','LS=21','LS=31','LS=41','LS=51','LS=61', 'fontsize',24)
+%%
+colorr = ['b','r','g','k','m','c',[0.6 0.4 1]]
+figure;
+cpt = 0;
+for i = [20:20:100]
+    cpt = cpt+1;
+    val = squeeze(tElapsed(:,cpt,:));
+    shadedErrorBar([1:10:69],mean(val'),std(val'),colorr(cpt),1);hold on;
+end
+xlim([1 62])
+ylabel('Time [s]', 'fontsize',24)
+xlabel('LS dimension', 'fontsize',24)
+%%
 
 
 
@@ -177,10 +205,6 @@ for trial =1:7
 
     meanTraj =promp{trial}.PHI_norm*promp{trial}.mu_w;
     meanTraj2 = reshape(meanTraj,70,69);
-
-    posterior = infTraj.PHI*infTraj.mu_w;
-    posterior2 = reshape(posterior,70,69);
-    drawSceleton(meanTraj2, posterior2)
 
 
     clear infTraj alphaTraj type x w teste

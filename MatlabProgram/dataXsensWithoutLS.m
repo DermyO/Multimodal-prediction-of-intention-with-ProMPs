@@ -30,7 +30,7 @@ for nbInput=69%2:3:69
     
     %variable tuned to achieve the trajectory correctly
     expNoise = 0.1%0.00001;
-    percentData = 20; %number of data max with what you try to find the correct movement
+    percentData = 30; %number of data max with what you try to find the correct movement
     
     %%%%%%%%%%%%%% END VARIABLE CHOICE
     
@@ -141,8 +141,8 @@ for nbInput=69%2:3:69
         promp{7}.w_alpha= w{7};
         
         %Recognition of the movement
-        [alphaTraj,type, x] = inferenceAlpha(promp,teste{1},M,s_bar,c,h,teste{1}.nbData, expNoise, 'MO');
-        infTraj = inference(promp, teste{1}, M, s_bar, c, h, teste{1}.nbData, expNoise, alphaTraj, nbInput);
+        %[alphaTraj,type, x] = inferenceAlpha(promp,teste{1},M,s_bar,c,h,teste{1}.nbData, expNoise, 'MO');
+        [infTraj,type] = inference(promp, teste{1}, M, s_bar, c, h, teste{1}.nbData, expNoise, 1, nbInput);
         tmpInf(cpt_nbInput, trial) = toc(tstart);
         %draw the infered movement
       %  drawInference(promp,inputName,infTraj, teste{1},s_bar,'Interval',[43:45]);
@@ -158,7 +158,7 @@ for nbInput=69%2:3:69
         
         posterior = infTraj.PHI*infTraj.mu_w;
         posterior2 = reshape(posterior,70,69);
-      %  drawSceleton(meanTraj2, posterior2)
+        drawSceleton(meanTraj2, posterior2)
         
         
         clear infTraj alphaTraj type x w teste
@@ -166,7 +166,7 @@ for nbInput=69%2:3:69
 
 end
 %%
-for trial=1%:7
+for trial=1:7
         meanTraj =promp{trial}.PHI_norm*promp{trial}.mu_w;
         meanTraj2 = reshape(meanTraj,70,69);
         
