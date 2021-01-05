@@ -2,7 +2,7 @@ function drawDistribution(promp, list,s_ref, varargin)
 %DRAWDISTRIBUTION draws the learned distribution
 
 set(0,'DefaultLineLinewidth',1)
-set(0,'DefaultAxesFontSize',12)
+set(0,'DefaultAxesFontSize',20)
 
 
 nbInputs = sum(promp.traj.nbInput);
@@ -19,8 +19,15 @@ if(~isempty(varargin))
         elseif(strcmp(varargin{i},'col')==1)
             i=i+1;
             col1 = varargin{i};
-            col2 = varargin{i};
-          %  fig = figure(10);
+            if(col1 =='b')
+                col2 = ':blue';
+            elseif(col1=='g')
+                col2 = ':green';
+            elseif(col1=='r')
+                col2 = ':red';
+            end
+            
+            fig = figure(10);
             hold on;
         elseif(strcmp(varargin{i},'fig'))
             fig =  varargin{i+1};
@@ -32,6 +39,7 @@ if(~isempty(varargin))
     end
 end
 if(~exist('fig'))
+    display('Create Fig');
     fig = figure;hold on;
 end
 if(size(interval)==[3,3]) 
@@ -53,11 +61,11 @@ end
             meanTraj =promp.PHI_mean*promp.mu_w;
             fig = visualisationShared(meanTraj, promp.PHI_mean*1.96*sqrt(diag(promp.sigma_w )), sum(promp.traj.nbInput), promp.meanTimes,  i, col1, fig,'vecX', [promp.meanInterval:promp.meanInterval:promp.meanTimes*promp.meanInterval]);
             if(length(col2) ==3)
-            	for j = 1 : promp.traj.nbTraj
+            	for j = 1 : max(promp.traj.nbTraj,10)
                     fig(size(fig,2) + 1) =  plot([promp.traj.interval(j):promp.traj.interval(j):promp.traj.totTime(j)*promp.traj.interval(j)],promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i), 'color', col2,'linewidth',0.5);hold on;
                 end
             else
-                for j = 1 : promp.traj.nbTraj
+                for j = 1 : max(promp.traj.nbTraj,10)
                     fig(size(fig,2) + 1) =  plot([promp.traj.interval(j):promp.traj.interval(j):promp.traj.totTime(j)*promp.traj.interval(j)],promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i), col2,'linewidth',0.5);hold on;
                 end
            end
@@ -69,9 +77,13 @@ end
             end
             set(gca, 'fontsize', 20);
             disG = size(fig,2);
-            ylabel(list{i}, 'fontsize', 24);
+            ylabel(list{i}, 'fontsize', 20);
+            list1 =  {'sep','oct','nov','dec','jan','fev','mar','avr','mai','jun','jul','aou'}; 
+            xticks([1 2 3 4 5 6 7 8 9 10 11 12])
+            xticklabels(list1)
+            
             if(i==interval(nbInputs))%promp.traj.nbInput(1))
-                xlabel('Time [s]', 'fontsize', 24);
+                xlabel('Mois', 'fontsize', 20);
             end
         elseif(flag_realT ==1)
 
@@ -95,12 +107,14 @@ end
                     fig(size(fig,2) + 1) =  plot(meanTraj(1 + s_ref*(i-1):s_ref*i), col1,'linewidth', 2);
                     datG = size(fig,2);
                 end
-            
             set(gca, 'fontsize', 20);
             disG = size(fig,2);
-            ylabel(list{i}, 'fontsize', 24);
+            ylabel(list{i}, 'fontsize', 20);
+               list1 =  {'sep','oct','nov','dec','jan','fev','mar','avr','mai','jun','jul','aou'}; 
+            xticks([1 2 3 4 5 6 7 8 9 10 11 12])
+            xticklabels(list1)
             if(i==promp.traj.nbInput(1))
-                xlabel('Normalized #samples', 'fontsize', 24);
+                xlabel('Normalized #samples', 'fontsize', 20);
             end  
         end
           %  fig = visualisation(promp.PHI_norm*promp.mu_w, sum(promp.traj.nbInput), s_ref,  i, 'g', fig);

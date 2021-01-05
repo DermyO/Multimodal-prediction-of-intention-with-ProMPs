@@ -1,6 +1,10 @@
-% Function that plot the matrix with the color col1. x is the line of the
-% matrix, y the number of colonnes
-
+% Function that plot the matrix with the color col1. 
+%x is the line of the matrix
+% y the number of colonnes
+% choice: ? maybe the data we draw ?
+%col1: the selected color
+%nameFig: the name of the figure
+%varargin : ? axe y ?
 function y = visualisation(matrix, x,y, choice, col1, nameFig, varargin)
 
 tall = size(nameFig,2);

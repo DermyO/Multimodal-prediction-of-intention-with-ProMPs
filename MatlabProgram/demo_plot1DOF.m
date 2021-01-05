@@ -13,10 +13,10 @@ addpath('./used_functions');
 
 %%%%%%%%%%%%%%%VARIABLES, please look at the README
 %Can be either ".mat" or ".txt". To use the recorded ".txt" file samples, put: 'Data/traj1'
-DataPath= 'Data/traj1_1DOF.mat';
-typeRecover= '.mat'; %or .txt, it depends on your choice of data file.
+DataPath= 'Data/dataAhead';
+typeRecover= '.txt'; %or .txt, it depends on your choice of data file.
 
-inputName = {'z[m]'};%label of your inputs
+inputName = {'x'};%label of your inputs
 s_ref=100; %reference number of samples
 nbInput(1) = 1; %number of inputs used during the inference (here Cartesian position)
 M(1) = 50; %number of basis functions to represent nbInput(1)

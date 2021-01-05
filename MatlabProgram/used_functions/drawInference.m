@@ -197,7 +197,11 @@ else
                 legend(nameFig(1,[dtG,otherG, otherP, dnG, prevG, newG]),'ground truth', 'expected ProMP','other prior', 'observations','prior proMP', 'bad prediction', 'Location', 'southeast');
             end
         else
-            legend(nameFig(1,[dtG,otherP, dnG, prevG, newG]),'ground truth', 'other prior', 'observations','prior proMP', 'prediction', 'Location', 'southeast');
+            if(exist('otherP'))
+                legend(nameFig(1,[dtG,otherP, dnG, prevG, newG]),'ground truth', 'other prior', 'observations','prior proMP', 'prediction', 'Location', 'southeast');
+            else
+               legend(nameFig(1,[dtG, dnG, prevG, newG]),'ground truth', 'observations','prior proMP', 'prediction', 'Location', 'southeast');
+            end
         end
     else
             legend(nameFig(1,[otherP, dnG, prevG, newG]), 'other prior', 'observations','prior proMP', 'prediction', 'Location', 'southeast');
