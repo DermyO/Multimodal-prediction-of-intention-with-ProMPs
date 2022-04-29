@@ -1,9 +1,6 @@
-%This demo computes N proMPs given a set of recorded trajectories containing the demonstrations for the N types of movements. 
-%It plots the results.
-
-% by Oriane Dermy 07/09/2016
-% For any problem / remark / improvement, contact me:
-% oriane.dermy@gmail.com with subject [proMPs_toolbox]
+%This function computes the distribution for a simple mouvement : y = x/2
+%+5.
+%M gaussians spread over time (CF Brouillon test basique)
 
 close all;
 clearvars;
@@ -12,14 +9,11 @@ addpath('./used_functions');
 
 
 %%%%%%%%%%%%%%%VARIABLES, please look at the README
-%Can be either ".mat" or ".txt". To use the recorded ".txt" file samples, put: 'Data/traj1'
-DataPath= 'Data/dataAhead';
-typeRecover= '.txt'; %or .txt, it depends on your choice of data file.
 
 inputName = {'x'};%label of your inputs
-s_ref=100; %reference number of samples
+s_ref=10; %reference number of samples
 nbInput(1) = 1; %number of inputs used during the inference (here Cartesian position)
-M(1) = 50; %number of basis functions to represent nbInput(1)
+M(1) = 5; %number of basis functions to represent nbInput(1)
 
 %This variable is the expected data noise, you can tune this parameter to achieve the trajectory correctly
 expNoise = 0.00001;
@@ -36,15 +30,21 @@ for i=1:size(M,2)
     dimRBF = dimRBF + M(i)*nbInput(i);
 end
 c(1) = 1.0 / (M(1)); %center of gaussians
-h(1) = c(1)/(M(1)); %bandwidth of the gaussians
-
-
-if(strcmp(typeRecover,'.mat')==1)
-    load(DataPath);
-else
-    %recover the data saved in the Data/trajX/recordY.txt files
-    t{1} = loadTrajectory('Data/traj1', 'top', 'refNb', s_ref, 'nbInput',nbInput);
+%avant :h(1) = c(1)/(M(1)); %bandwidth of the gaussians
+s(1) =c(1)/4; %test ori 28/04/2022 car 95 percentile = c(i) + c(i+1) / 2 = mu + 2s => 2s = ci/2 => s = ci/4
+h(1) = 2*s(1)*s(1);
+v =  linspace(5,10,10);
+t{1}.nbTraj =10;%20;
+t{1}.y = cell(1, t{1}.nbTraj);
+for i=1:t{1}.nbTraj
+   t{1}.y{i} = v + 0.25*randn(1, length(v));
+   t{1}.yMat{i} = t{1}.y{i};
+   t{1}.totTime(i) = 10;
+   t{1}.alpha(i) = 1;
 end
+t{1}.nbInput = 1;
+t{1}.label = 'test';
+    
 [train, test] =  partitionTrajectory(t{1}, 1, percentData, s_ref);
 
 %plot recoverData

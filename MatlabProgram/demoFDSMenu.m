@@ -139,7 +139,7 @@ while(continueM==1)
 
             %end
         case 8
-                   clear test;
+            clear test;
             test{1} = beginATrajectoryWithRealIcub(connexion);
             
             w = computeAlpha(test{1}.nbData,t, nbInput);

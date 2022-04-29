@@ -9,20 +9,12 @@ function [train, test] = partitionTrajectory(t, percent, percentData, refTime,va
 %refTime : s_bar: the reference total number of sample for a trajectory
 %varargin: use only if percent=1: you can precise the index of the trajectory test.
     ind = ceil(rand(1)*t.nbTraj);
-    flag_tmp = 0;
     if(~isempty(varargin))
-        for cpt=1:1:length(varargin)    
-            
-            if(flag_tmp ==1)
-                flag_tmp =0;
-                continue;
-            end
-            if(isnumeric(varargin{cpt}))
-                ind = varargin{cpt};
+        for cpt=1:1:length(varargin)            
+            if(strcmp(varargin{cpt},'Indice') ==1)
+                ind = varargin{cpt+1};
             elseif(strcmp(varargin{cpt},'Interval') ==1)
-                cpt = cpt+1;
-                interval = varargin{cpt};
-                flag_tmp =1;
+                interval = varargin{cpt+1};
             end
         end
     end
@@ -35,6 +27,7 @@ if(percent==1)%want only one test
     test{1}.totTime = t.totTime(ind);
     test{1}.alpha = refTime / test{1}.totTime;
     test{1}.partialTraj = [];
+    test{1}.partialTrajMat = [];
     test{1}.nbData = ceil((percentData/100)*t.totTime(ind));
     if (isfield(t, 'realTime'))
         test{1}.realTime = t.realTime{ind};
@@ -43,8 +36,14 @@ if(percent==1)%want only one test
         test{1}.interval = t.interval(ind);
     end
     
+    if(interval)
+       test{1}.partialTrajMat = [test{1}.partialTrajMat, t.yMat{ind}(1:test{1}.nbData)];
+       test{1}.partialTraj = [test{1}.partialTraj; t.yMat{ind}(1:test{1}.nbData)];
+    else
     for i=interval
+       test{1}.partialTrajMat = [test{1}.partialTrajMat, t.yMat{ind}(1:test{1}.nbData,i)];
        test{1}.partialTraj = [test{1}.partialTraj; t.yMat{ind}(1:test{1}.nbData,i)];
+    end
     end
     train.nbTraj = t.nbTraj -1;
     train.nbInput = t.nbInput;

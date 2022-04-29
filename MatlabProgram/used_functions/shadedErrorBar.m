@@ -124,7 +124,8 @@ end
     
 %Calculate the error bars
 uE=y+errBar(1,:);
-lE=y-errBar(2,:);
+
+lE=y-errBar(2,:); 
 
 
 %Add the patch error bar

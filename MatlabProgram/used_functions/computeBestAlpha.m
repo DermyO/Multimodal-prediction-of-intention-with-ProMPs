@@ -34,7 +34,7 @@ function [value,bestproba, xest] = computeBestAlpha(ProMP, obsTraj, expNoise, nb
      if(type == 'MO')%Model: we compute THE alpha that correspond to the learned alpha model.
         
         %computes the expected alpha using the model
-        variation = abs(obsTraj.yMat(nbData,1:nbInputs(1))  - obsTraj.yMat(1,1:nbInputs(1)));
+        variation = abs(obsTraj.partialTrajMat(nbData,1:nbInputs(1))  - obsTraj.partialTrajMat(1,1:nbInputs(1)));
         basis = AlphaBasis(variation, 'nbTypeData',nbInputs(1));
         value  = basis*ProMP.w_alpha;
         if(floor(refTime / value )<nbData) %if the model found a too short alpha phasis, we force the trajectory to spend as least nbData sample times

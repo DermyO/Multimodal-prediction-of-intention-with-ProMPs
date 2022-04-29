@@ -18,7 +18,7 @@ nbInput(1) = 4 ; %3; %number of input used during the inference (here cartesian 
 nbInput(2) = 3; %other inputs (here forces and wrenches)
 
 M(1) = 30; %number of basis functions for the first type of input
-M(2) = 30 %number of basis functions for the second type of input
+M(2) = 30; %number of basis functions for the second type of input
 
 %variable tuned to achieve the trajectory correctly
 expNoise = 4.0001;

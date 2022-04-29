@@ -131,7 +131,7 @@
                 if(tmp>0)
                     sum2 = 0;
                     for(i=1:tmp)
-                        sum2 = sum2 + data_tmp{j}(floor(size(data_tmp{j},1)/4)*4+i,:)
+                        sum2 = sum2 + data_tmp{j}(floor(size(data_tmp{j},1)/4)*4+i,:);
                     end
                     data{j}(floor(size(data_tmp{j},1)/4)+1,:) = sum2;
                 end
@@ -150,7 +150,68 @@
     if(specific ==4)
         %%%Fill trajectories information using the retrieved data{j} values
         trajectory.nbTraj = 1;
-        trajectory.inputName = data{1}.textdata(1,2:size(data{1}.textdata,2));%  colheaders;
+        
+        if(size(data{1}.textdata,2)==1)
+           tmpName = data{1}.textdata(1,:);
+           tmpName2 = regexprep(tmpName,'10 ','News- ');
+           tmpName = regexprep(tmpName2,' 10',' News');
+           tmpName2 = regexprep(tmpName,'11 ','Res.Reserv- ');
+           tmpName = regexprep(tmpName2,' 11',' Res.Reserv');
+           tmpName2 = regexprep(tmpName,'12 ','Res.inLine- ');
+           tmpName = regexprep(tmpName2,' 12',' Res.inLine');
+           tmpName2 = regexprep(tmpName,'15 ','Pedag.It.- ');
+           tmpName = regexprep(tmpName2,' 15',' Pedag.It.');
+           tmpName2 = regexprep(tmpName,'16 ','Collect.- ');
+           tmpName = regexprep(tmpName2,' 16',' Collect.');
+           tmpName2 = regexprep(tmpName,'1 ','Stock- ');
+           tmpName = regexprep(tmpName2,' 1',' Stock');
+           tmpName2 = regexprep(tmpName,'2 ','Collab- ');
+           tmpName = regexprep(tmpName2,' 2',' Collab');
+           tmpName2 = regexprep(tmpName,'3 ','Marks- ');
+           tmpName = regexprep(tmpName2,' 3',' Marks');
+           tmpName2 = regexprep(tmpName,'4 ','Abscence- ');
+           tmpName = regexprep(tmpName2,' 4',' Absence');
+           tmpName2 = regexprep(tmpName,'5 ','SchoolLife- ');
+           tmpName = regexprep(tmpName2,' 5',' SchoolLife');
+           tmpName2 = regexprep(tmpName,'6 ','CompetM- ');
+           tmpName = regexprep(tmpName2,' 6',' Compet');
+           tmpName2 = regexprep(tmpName,'7 ','TimeM- ');
+           tmpName = regexprep(tmpName2,' 7',' TimeM');
+           tmpName2 = regexprep(tmpName,'8 ','Homework- ');
+           tmpName = regexprep(tmpName2,' 8',' Homework');
+           tmpName2 = regexprep(tmpName,'9 ','Mail- ');
+           tmpName = regexprep(tmpName2,' 9',' Mail');
+
+           trajectory.inputName = erase(erase(split(tmpName{1}(6:end-1),"("), ") "), ")") ;
+           trajectory.inputName = erase(trajectory.inputName(2:end,:)," ");
+        else
+            trajectory.inputName = data{1}.textdata(1,2:size(data{1}.textdata,2));%  colheaders; 
+            
+                tmpName = data{1}.textdata(1,2:size(data{1}.textdata,2));
+                for i=1:size(tmpName,2)
+                    tmpName{i} =  regexprep(tmpName{i},'e10','News');
+                    tmpName{i} =  regexprep(tmpName{i},'e11','Res.Reserv');
+                    tmpName{i} =  regexprep(tmpName{i},'e12','Res.inLine');
+                    tmpName{i} =  regexprep(tmpName{i},'e15','Pedag.It.');
+                    tmpName{i} =  regexprep(tmpName{i},'e16','Collect.');
+                    tmpName{i} =  regexprep(tmpName{i},'e1','Stock');
+                    tmpName{i} =  regexprep(tmpName{i},'e2','Collab');
+                    tmpName{i} =  regexprep(tmpName{i},'e3','Marks');
+                    tmpName{i} =  regexprep(tmpName{i},'e4','Absence');
+                    tmpName{i} =  regexprep(tmpName{i},'e5','SchoolLife');
+                    tmpName{i} =  regexprep(tmpName{i},'e6','CompetM');
+                    tmpName{i} =  regexprep(tmpName{i},'e7','TimeM');
+                    tmpName{i} =  regexprep(tmpName{i},'e8','Homework');
+                    tmpName{i} =  regexprep(tmpName{i},'e9','Mail');  
+                    tmpName{i} =  regexprep(tmpName{i},'I1',' -s- ');
+                    tmpName{i} =  regexprep(tmpName{i},'I2',' -mn- ');
+                    tmpName{i} =  regexprep(tmpName{i},'I3',' -h- ');
+                    tmpName{i} =  regexprep(tmpName{i},'I4',' -d- '); 
+                    tmpName{i} =  regexprep(tmpName{i},'I5',' -wk- ');
+                    tmpName{i} =  regexprep(tmpName{i},'I6',' -mt- ');  
+                end
+                 trajectory.inputName  = tmpName;
+        end
         if(nbInput ==-1) %if the number of input parameters is not given in input, it computes it
             trajectory.nbInput = size(data{1}.data,2);
         else

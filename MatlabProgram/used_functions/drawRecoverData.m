@@ -1,13 +1,14 @@
 function drawRecoverData(traj, list, varargin)
 
 %set(0,'DefaultLineLinewidth',0.1);
-set(0,'DefaultAxesFontSize',18);
-
-fsize = 14;
-fsize2 = 12;
+set(0,'DefaultAxesFontSize',20);
+hold on;
+fsize = 20;
+fsize2 = 20;
 specific = 0;
 isInterval = 0;
 col = 'm';
+valFigure = 1;
 if(~isempty(varargin))
     for index = 1:length(varargin)
         if(strcmp(varargin{index},'Specific'))%If you want to plot position/forces/moment separately
@@ -25,121 +26,84 @@ if(~isempty(varargin))
         end
     end
 end
+fig22 = figure(valFigure);
+set(gca, 'fontsize', fsize);
 
 if(specific==1)%If you want to plot position/forces/moment separately
-        
         %Here we plot the forces
-            fig22 = figure;
-            set(gca, 'fontsize', fsize);
-            for l=traj.nbInput(1)+1:6  
-                subplot(3,1,l-traj.nbInput(1));%size(nbDof,2),l);
-                for i=1:traj.nbTraj     
-                    fig22 = visualisation(traj.y{i},sum(traj.nbInput),traj.totTime(i), l, col,fig22,traj.realTime{i});hold on;
-                end
-
-                 ylabel(list{l}, 'fontsize', fsize);
-                 if(l==6)
-                      xlabel('Time [s]', 'fontsize', fsize);
-                 end
-                 set(gca, 'fontsize', 20)
+        for l=traj.nbInput(1)+1:6
+            subplot(3,1,l-traj.nbInput(1));%size(nbDof,2),l);
+            for i=1:traj.nbTraj
+                fig22 = visualisation(traj.y{i},sum(traj.nbInput),traj.totTime(i), l, col,fig22,traj.realTime{i});hold on;
             end
-
-        %Here we plot the moments
-            fig22 = figure;
-                 set(gca, 'fontsize', fsize2);
-
-            for l= 7:9  
-                subplot(3,1,l-6);%size(nbDof,2),l);
-                for i=1:traj.nbTraj     
-                    fig22 = visualisation(traj.y{i},length(list),traj.totTime(i), l, col,fig22,traj.realTime{i});hold on;
-                end
-
-                 ylabel(list{l}, 'fontsize', fsize);
-                 if(l==9)
-                      xlabel('Time [s]', 'fontsize', fsize);
-                 end
-                 set(gca, 'fontsize', 20)
+            
+            ylabel(list{l}, 'fontsize', fsize);
+            if(l==6)
+                xlabel('Time [s]', 'fontsize', fsize);
             end
+        end
         
+        %Here we plot the moments
+        for l= 7:9
+            subplot(3,1,l-6);%size(nbDof,2),l);
+            for i=1:traj.nbTraj
+                fig22 = visualisation(traj.y{i},length(list),traj.totTime(i), l, col,fig22,traj.realTime{i});hold on;
+            end
+            
+            ylabel(list{l}, 'fontsize', fsize);
+            if(l==9)
+                xlabel('Time [s]', 'fontsize', fsize);
+            end
+        end
         
         %Here we plot the cartesian position
-        if(exist('valFigure','var'))
-            fig22 = figure(valFigure);
-        elseif(~exist('fig22','var'))
-            fig22 = figure;
-        end
-            set(gca, 'fontsize', fsize2);
-
-            for l=1:traj.nbInput(1)
-                subplot(traj.nbInput(1),1,l)
-                for i=1:traj.nbTraj     
-                    fig22 = visualisation(traj.y{i},length(list),traj.totTime(i), l, col,fig22,traj.realTime{i});hold on;
-                end
-
-                 ylabel(list{l}, 'fontsize', fsize);
-
-                 if(l==traj.nbInput(1))
-                      xlabel('Time [s]', 'fontsize', fsize);
-                 end
+        for l=1:traj.nbInput(1)
+            subplot(traj.nbInput(1),1,l)
+            for i=1:traj.nbTraj
+                fig22 = visualisation(traj.y{i},length(list),traj.totTime(i), l, col,fig22,traj.realTime{i});hold on;
             end
-
-
-
-        %Here we plot the forces and moments
-        %     fig22 = figure;
-        %     for l=traj.nbInput(1)+1:sum(traj.nbInput) 
-        %         subplot(traj.nbInput(2),1,l-traj.nbInput(1));%size(nbDof,2),l);
-        %         for i=1:traj.nbTraj  
-        %             fig22 = visualisation(traj.y{i},sum(traj.nbInput),traj.totTime(i), l, ':b',fig22,traj.realTime{i});hold on;
-        %         end
-        % 
-        %          ylabel(list{l}, 'fontsize', fsize);
-        %          if(l==sum(traj.nbInput))
-        %               xlabel('Time [s]', 'fontsize', fsize);
-        %          end
-        %       set(gca, 'fontsize', 20)
-        %     end
-        % end
+            
+            ylabel(list{l}, 'fontsize', fsize);
+            
+            if(l==traj.nbInput(1))
+                xlabel('Time [s]', 'fontsize', fsize);
+            end
+        end
 elseif(isInterval==1)
-    fig22 = figure(valFigure);
-    set(gca, 'fontsize', fsize2);
     cpt=0;
-    list1 =  {'sep','oct','nov','dec','jan','fev','mar','avr','mai','jun','jul','aou'};
-    % listl = [9,10,11,12,01,02,03,04,05,06,07,08];
+    %list1 =  {'sep','oct','nov','dec','jan','feb','mar','apr','may','jun','jul','aug'};
     for l=interval  
         cpt=cpt+1;
         subplot(ceil(length(interval)/2),2,cpt)
         for i=1:traj.nbTraj     
             fig22 = visualisation(traj.y{i},length(list),traj.totTime(i), l, col,fig22);hold on;
         end
-
+     %    title(traj.label)
          ylabel(list{l}, 'fontsize', fsize);
-         xticks([1 2 3 4 5 6 7 8 9 10 11 12])
-         xticklabels(list1)
-         %xlabel(list1,'fontsize', fsize);
-         if(cpt==length(interval))
-              xlabel('Mois', 'fontsize', fsize);
-         end
+     %    xticks([1 2 3 4 5 6 7 8 9 10 11 12])
+     %    xticklabels(list1)
+   % xticks(0:2:traj.totTime(i))
+     % xticks([0:2:traj.totTime(i)]);
+     %xticklabels([0, traj.realTime{i}(2:2:14)]);
+        % if(cpt==length(interval))
+         %     xlabel('Mois', 'fontsize', fsize);
+        % end
     end        
 else
-
-fig22 = figure(valFigure);
-set(gca, 'fontsize', fsize2);
-
-for l=1:traj.nbInput(1)  
-	subplot(ceil(traj.nbInput(1)/2),2,l)
-    for i=1:traj.nbTraj     
-    	fig22 = visualisation(traj.y{i},length(list),traj.totTime(i), l, col,fig22);hold on;
-    end
-    list1 =  {'sep','oct','nov','dec','jan','fev','mar','avr','mai','jun','jul','aou'};
-
-    ylabel(list{l}, 'fontsize', fsize);
-     xticks([1 2 3 4 5 6 7 8 9 10 11 12])
-         xticklabels(list1)
-% 
-%          if(l==traj.nbInput(1))
-%               xlabel('Time [s]', 'fontsize', fsize);
-%          end
+    for l=1:traj.nbInput(1)  
+        subplot(traj.nbInput(1),1,l)
+        for i=1:traj.nbTraj     
+            fig22 = visualisation(traj.y{i},traj.nbInput,traj.totTime(i), l, col,fig22);hold on;
+        end
+       % list1 =  {'sep','oct','nov','dec','jan','fev','mar','avr','mai','jun','jul','aou'};
+       if(isfield(traj,'inputName')) 
+        ylabel(traj.inputName(l), 'fontsize', fsize);
+       end
+        %ylabel(list{l}, 'fontsize', fsize);
+        %xticks([1 2 3 4 5 6 7 8 9 10 11 12])
+        if(isfield(traj, "realTime"))
+            xticklabels(traj.realTime{i});
+        end
     end
 end
 end

@@ -8,7 +8,7 @@ function [infTraj, typeReco] = inference(promps,obsTraj,M,s_bar,c,h,nbData, expN
 nbKindOfTraj = length(promps);
 nbInput= promps{1}.traj.nbInput;
 
-
+kernel='Gaussian';
 flag_spe = false;
 flag_spe_int = false;
 % nbInputReco = nbInput;
@@ -23,6 +23,8 @@ flag_spe_int = false;
          elseif(strcmp(varargin{i}, 'speInt')==1)
              flag_spe_int = true;
              speInputs = varargin{i+1};
+         elseif(strcmp(varargin{i}, 'Periodic')==1)
+             kernel = 'Periodic';
          end
      end
  end
@@ -52,13 +54,13 @@ flag_spe_int = false;
     if(round(s_bar/valAlpha(i)) < nbData)
         valAlpha(i) = s_bar / nbData;
     end
-        PHI_coor{i} = computeBasisFunction(s_bar,M(1), nbInput(1), valAlpha(i), round(s_bar/valAlpha(i)), c(1), h(1), nbData);
+        PHI_coor{i} = computeBasisFunction(s_bar,M(1), nbInput(1), valAlpha(i), round(s_bar/valAlpha(i)), c(1), h(1), nbData,kernel);
         %matrix of forces basis functions that correspond to the first nbData
         %PHI_forces{i} = computeBasisFunction(z,nbFunctions(2), promps{i}.traj.nbInput(2),promps{i}.mu_alpha, round(z/promps{i}.mu_alpha), center_gaussian(2), h(2), nbData);%computeBasisForces(z,nbFunctions(2),mu_alpha(i), round(z/mu_alpha(i)), h, nbData);
 
         %matrix of basis functions for all data that correspond to the first
         %nbData with phasis alpha_mean
-        PHI{i} =  computeBasisFunction(s_bar,M, nbInput, valAlpha(i), round(s_bar/valAlpha(i)), c, h, round(s_bar/valAlpha(i)));%blkdiag(PHI_coor{i},PHI_forces{i}); %PHI_coor{i};
+        PHI{i} =  computeBasisFunction(s_bar,M, nbInput, valAlpha(i), round(s_bar/valAlpha(i)), c, h, round(s_bar/valAlpha(i)),kernel);%blkdiag(PHI_coor{i},PHI_forces{i}); %PHI_coor{i};
 
         %we compute the learned distribution trajectory of cartesian position
         u{i} = PHI_coor{i}*mu_w_coord{i};
@@ -164,11 +166,11 @@ mask = logical(mk);
         if(round(s_bar/valAlpha(i)) < nbData)
             valAlpha(i) = s_bar / nbData;
         end
-        PHI_coor{i} = computeBasisFunction(s_bar,M(1), length(speInputs), valAlpha(i), round(s_bar/valAlpha(i)), c(1), h(1), nbData);
+        PHI_coor{i} = computeBasisFunction(s_bar,M(1), length(speInputs), valAlpha(i), round(s_bar/valAlpha(i)), c(1), h(1), nbData, kernel);
 
         %matrix of basis functions for all data that correspond to the first
         %nbData with phasis alpha_mean
-        PHI{i} =  computeBasisFunction(s_bar,M, nbInput, valAlpha(i), round(s_bar/valAlpha(i)), c, h, round(s_bar/valAlpha(i)));%blkdiag(PHI_coor{i},PHI_forces{i}); %PHI_coor{i};
+        PHI{i} =  computeBasisFunction(s_bar,M, nbInput, valAlpha(i), round(s_bar/valAlpha(i)), c, h, round(s_bar/valAlpha(i)), kernel);%blkdiag(PHI_coor{i},PHI_forces{i}); %PHI_coor{i};
 
         %we compute the learned distribution trajectory of cartesian position
         u{i} = PHI_coor{i}*mu_w_coord{i};
@@ -255,13 +257,13 @@ mask = logical(mk);
         if(round(s_bar/valAlpha(i)) < nbData)
             valAlpha(i) = s_bar / nbData;
         end
-        PHI_coor{i} = computeBasisFunction(s_bar,M(1), length(speInputs(1):speInputs(2)), valAlpha(i), round(s_bar/valAlpha(i)), c(1), h(1), nbData);
+        PHI_coor{i} = computeBasisFunction(s_bar,M(1), length(speInputs(1):speInputs(2)), valAlpha(i), round(s_bar/valAlpha(i)), c(1), h(1), nbData, kernel);
         %matrix of forces basis functions that correspond to the first nbData
         %PHI_forces{i} = computeBasisFunction(z,nbFunctions(2), promps{i}.traj.nbInput(2),promps{i}.mu_alpha, round(z/promps{i}.mu_alpha), center_gaussian(2), h(2), nbData);%computeBasisForces(z,nbFunctions(2),mu_alpha(i), round(z/mu_alpha(i)), h, nbData);
 
         %matrix of basis functions for all data that correspond to the first
         %nbData with phasis alpha_mean
-        PHI{i} =  computeBasisFunction(s_bar,M, nbInput, valAlpha(i), round(s_bar/valAlpha(i)), c, h, round(s_bar/valAlpha(i)));%blkdiag(PHI_coor{i},PHI_forces{i}); %PHI_coor{i};
+        PHI{i} =  computeBasisFunction(s_bar,M, nbInput, valAlpha(i), round(s_bar/valAlpha(i)), c, h, round(s_bar/valAlpha(i)), kernel);%blkdiag(PHI_coor{i},PHI_forces{i}); %PHI_coor{i};
 
         %we compute the learned distribution trajectory of cartesian position
         u{i} = PHI_coor{i}*mu_w_coord{i};
