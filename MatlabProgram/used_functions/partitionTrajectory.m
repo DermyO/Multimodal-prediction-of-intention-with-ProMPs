@@ -36,15 +36,15 @@ if(percent==1)%want only one test
         test{1}.interval = t.interval(ind);
     end
     
-    if(interval)
-       test{1}.partialTrajMat = [test{1}.partialTrajMat, t.yMat{ind}(1:test{1}.nbData)];
-       test{1}.partialTraj = [test{1}.partialTraj; t.yMat{ind}(1:test{1}.nbData)];
-    else
-    for i=interval
-       test{1}.partialTrajMat = [test{1}.partialTrajMat, t.yMat{ind}(1:test{1}.nbData,i)];
-       test{1}.partialTraj = [test{1}.partialTraj; t.yMat{ind}(1:test{1}.nbData,i)];
-    end
-    end
+    %if(interval)
+     %  test{1}.partialTrajMat = [test{1}.partialTrajMat, t.yMat{ind}(1:test{1}.nbData)];
+     %  test{1}.partialTraj = [test{1}.partialTraj; t.yMat{ind}(1:test{1}.nbData)];
+    %else
+        for i=interval
+            test{1}.partialTrajMat = [test{1}.partialTrajMat, t.yMat{ind}(1:test{1}.nbData,i)];
+            test{1}.partialTraj = [test{1}.partialTraj; t.yMat{ind}(1:test{1}.nbData,i)];
+        end
+    %end
     train.nbTraj = t.nbTraj -1;
     train.nbInput = t.nbInput;
     train.label = t.label;

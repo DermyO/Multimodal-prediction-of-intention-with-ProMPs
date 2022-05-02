@@ -5,7 +5,7 @@
 close all;
 clearvars;
 warning('off','MATLAB:colon:nonIntegerIndex');
-addpath('./used_functions');
+addpath('../used_functions');
 
 
 %%%%%%%%%%%%%%%VARIABLES, please look at the README
@@ -43,17 +43,34 @@ for i=1:t{1}.nbTraj
    t{1}.alpha(i) = t{1}.totTime(i)/s_ref;
 %   t{1}.realTime{i} = linspace(1,10);
 end
+
+t{2}.nbTraj =20;
+t{2}.y = cell(1, t{1}.nbTraj);
+for i=1:t{1}.nbTraj
+   t{2}.y{i} = v*0.8 + 0.1*randn(1, length(v))';
+   t{2}.yMat{i} = t{1}.y{i};
+   t{2}.totTime(i) = size(t{1}.y{i},1);
+   t{2}.alpha(i) = t{1}.totTime(i)/s_ref;
+   t{1}.realTime{i} = linspace(1,10);
+end
+
+
 t{1}.nbInput = 1;
-t{1}.label = 'test';
-    
-[train, test] =  partitionTrajectory(t{1}, 1, percentData, s_ref);
+t{1}.label = 'linear1';
+t{2}.nbInput = 1;
+t{2}.label = 'linear2';    
+[train{1}, test{1}] =  partitionTrajectory(t{1}, 1, percentData, s_ref);
+[train{2}, test{2}] =  partitionTrajectory(t{2}, 1, percentData, s_ref);
+test{1} = test{1}{1};
+test{2} = test{2}{1};
 
 %plot recoverData
-drawRecoverData(t{1}, inputName, 'Specolor','m','namFig', 1);
+%drawRecoverData(t{1}, inputName, 'Specolor','m','namFig', 1);
+%drawRecoverData(t{2}, inputName, 'Specolor','k','namFig', 1);
 
 %compute the distribution for each kind of trajectories.
-promp{1} = computeDistribution(train, M, s_ref,c,h);%, 'Draw');
-
+promp{1} = computeDistribution(train{1}, M, s_ref,c,h);%, 'Draw');
+promp{2} = computeDistribution(train{2}, M, s_ref,c,h);%, 'Draw');
 %plot distribution
 %drawDistribution(promp{1}, inputName,s_ref);
 %plot RBF
@@ -66,6 +83,8 @@ else
         %alpha model
         w = computeAlpha(test{1}.nbData,t, nbInput);
         promp{1}.w_alpha = w{1};
+        w = computeAlpha(test{2}.nbData,t, nbInput);
+        promp{2}.w_alpha = w{1};
     end
         [expAlpha,type, x] = inferenceAlpha(promp,test{1},M,s_ref,c,h,test{1}.nbData, expNoise, choice);
 end
@@ -76,3 +95,5 @@ infTraj = inference(promp, test{1}, M, s_ref, c, h, test{1}.nbData, expNoise, ex
 
 %draw the infered movement
 drawInference(promp,inputName,infTraj, test{1},s_ref);
+drawInferenceRescaled(promp,{'y=x/2 + 5'}, infTraj, test{1},s_ref)
+drawErrorInference(promp,inputName,infTraj, test{1},s_ref, 1, 'shaded')

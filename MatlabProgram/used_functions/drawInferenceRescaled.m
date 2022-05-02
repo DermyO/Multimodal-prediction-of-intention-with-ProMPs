@@ -1,4 +1,4 @@
-function drawInferenceRescaled(promp,list, infTraj, test,s_ref, varargin)
+function drawInferenceRescaled(promp,ylabell, infTraj, test,s_ref, varargin)
 
 
 nbInput = promp{1}.traj.nbInput;
@@ -74,7 +74,7 @@ for vff=interval
         nameFig(size(nameFig,2) + 1) = plot(test.partialTraj(1+ test.nbData*(vff-init):(infTraj.timeInf/s_ref): test.nbData*(vff-init+1)),'ok','linewidth',3);
         dnG = size(nameFig,2);
     end
-    ylabel(list{vff}, 'fontsize', 24);
+    ylabel(ylabell{vff}, 'fontsize', 24);
     if(exist('axiss','var'))
         axis(axiss);
     end
@@ -140,7 +140,7 @@ else
            %  nameFig(size(nameFig,2) + 1) = plot(test.partialTraj(1+ test.nbData*(vff-init): test.nbData*(vff-init+1)),'xb','linewidth',1); 
         end
 
-        ylabel(list{vff}, 'fontsize', 24);
+        ylabel(ylabell{vff}, 'fontsize', 24);
         if(exist('xlimss','var'))
             xlim(xlimss);
         elseif(exist('xmin','var'))
