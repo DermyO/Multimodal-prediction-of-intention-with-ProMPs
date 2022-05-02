@@ -12,10 +12,13 @@ function PHI = computeBasisFunction(s_ref,M, nbInput, alpha, totalTime, c, h, nb
 % nbData: normally = totalTime. But if you want a subpart of the matrix,
 % you can specify this number.
 kernel = 'gaussian';
+flag_draw=0;
 if(~isempty(varargin))
     for i=1:length(varargin)
         if(strcmp(varargin{i}, 'Periodic')==1)
             kernel = 'Periodic';
+        elseif(strcmp(varargin{i}, 'Draw')==1)
+            flag_draw=1;
         end
     end
 end
@@ -41,13 +44,12 @@ if(strcmp(kernel, 'gaussian')==1)
                 phi{k}(t,i) = basis{k}(t,i) / sumBI;
             end
         end
-         plot(basis{k}(:,1)')
-         plot(basis{k}(:,2)')
-         plot(basis{k}(:,3)')
-         plot(basis{k}(:,4)')
-         plot(basis{k}(:,5)')
+      
     end
-    
+    if(flag_draw==1)
+    plot(phi{1}, 'r');
+    plot(basis{k}, 'b');
+    end
 elseif(strcmp(kernel, 'Periodic')==1)
     for k=1:length(M)
         for i = 1 : M(k)

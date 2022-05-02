@@ -26,12 +26,14 @@ function promp = computeDistribution(traj, M, s_ref,c,h, varargin)
     end
     
     %%if plotGaussians
-    %%plot(promp.PHI{1})
-    
+    if(flag_draw==1)
+        figure;
+        plot(promp.PHI{1})
+        figure;
+    end
     
     promp.mu_alpha = mean(promp.traj.alpha);
     promp.sigma_alpha = cov(promp.traj.alpha);
-
     promp.PHI_norm = computeBasisFunction (s_ref,M,promp.traj.nbInput, 1, s_ref,c,h, s_ref, kernel);
     promp.PHI_mean = computeBasisFunction (s_ref,M,promp.traj.nbInput, promp.mu_alpha, s_ref / promp.mu_alpha,c,h, s_ref / promp.mu_alpha, kernel);
 
@@ -49,13 +51,10 @@ function promp = computeDistribution(traj, M, s_ref,c,h, varargin)
             promp.traj.alpha(j) = s_ref /promp.traj.totTime(j);
         end
        sizeNoise = size(promp.PHI{j}'*promp.PHI{j});
-       
-       
        %Least square
         w(j,:) = (promp.PHI{j}'*promp.PHI{j}+1e-12*eye(sizeNoise)) \ promp.PHI{j}' * promp.traj.y{j};        
         listw(j,:) =w(j,:); 
       %  promp.traj.interval(j) = promp.traj.interval(j)  + promp.traj.realTime{j}(promp.traj.totTime);
-
     end
     
     %computation of the w distribution     
