@@ -152,17 +152,18 @@ else
         subplot(nbInput(1),1,vff);
         i = infTraj.reco;%reco{1};
         
-        if(isfield(test, 'realTime'))
+        if(isfield(test, 'realTime')) %donne l'intervalle temporel entre deux données ?
             interval =  test.realTime;%(test.totTime) / test.totTime;
-            RTInf = (interval(test.nbData) ) / test.nbData;%infTraj.timeInf*0.01;
+            RTInf = (interval(test.nbData)- test.realTime(1)) / (test.nbData-1);%infTraj.timeInf*0.01;
+            intervalInf = [test.realTime(1):RTInf:test.realTime(1) + RTInf*(infTraj.timeInf-1)] ;%/ infTraj.timeInf;
         else
             promp{i}.meanInterval = 0.01; %TODO QUEST CE QUE CESTTTTTTT !!!
             RTInf =    promp{i}.meanInterval;
-            interval =  [0:promp{i}.meanInterval:promp{i}.meanInterval*test.nbData];
-            
+        %    interval =  [promp{i}.meanInterval:promp{i}.meanInterval: promp{i}.meanInterval*(test.nbData)];
+            intervalInf = [RTInf:RTInf: RTInf*(infTraj.timeInf)] ;%/ infTraj.timeInf;
         end
-        
-        intervalInf = [0:RTInf:RTInf*(infTraj.timeInf-1)] ;%/ infTraj.timeInf;
+       
+       
         prior = infTraj.PHI*promp{i}.mu_w;
         varPrior = infTraj.PHI*1.96*sqrt(diag(promp{i}.sigma_w ));
         
@@ -242,14 +243,21 @@ else
         end
         
         
+        %%2/05/22 semble pas marcher : suppr realTime ?
         if(isfield(test, 'realTime'))%isfield(test, 'interval') &&
-            nameFig(size(nameFig,2) + 1) = plot( test.realTime -test.realTime(1) ,test.yMat(:,vff), ':k', 'linewidth', 2); %
+            nameFig(size(nameFig,2) + 1) = plot( test.realTime(1:test.totTime) ,test.yMat(:,vff), ':k', 'linewidth', 2); %
         else
-            nameFig(size(nameFig,2) + 1) = plot( [0:RTInf:(test.totTime-1)*RTInf], test.yMat(:,vff), ':k', 'linewidth', 2);
+            nameFig(size(nameFig,2) + 1) = plot([RTInf:RTInf:(test.totTime)*RTInf], test.yMat(:,vff), ':k', 'linewidth', 2);
         end
-        %visualisation2(test.yMat,sum(nbInput), test.totTime,vff, ':k', 1, nameFig);hold on;
+
         dtG = size(nameFig,2);
-        nameFig(size(nameFig,2) + 1) = plot(interval(1:test.nbData) - interval(1),test.partialTraj(1+ test.nbData*(vff-1):test.nbData + test.nbData*(vff-1)),'.-k','linewidth',3);
+        %%2/05/22 semble ne pas marcher je suppr realTime ?
+        if(isfield(test, 'realTime'))
+            nameFig(size(nameFig,2) + 1) = plot(test.realTime(1:test.nbData),test.partialTraj(1+ test.nbData*(vff-1):test.nbData + test.nbData*(vff-1)),'.-k','linewidth',3); 
+        else
+            nameFig(size(nameFig,2) + 1) = plot([RTInf:RTInf:(test.nbData)*RTInf],test.partialTraj(1+ test.nbData*(vff-1):test.nbData + test.nbData*(vff-1)),'.-k','linewidth',3);
+            %plot(interval(1:test.nbData) - interval(1),test.partialTraj(1+ test.nbData*(vff-1):test.nbData + test.nbData*(vff-1)),'.-k','linewidth',3);
+        end
         dnG = size(nameFig,2);
         
         ylabel(list{vff}, 'fontsize', 24);
