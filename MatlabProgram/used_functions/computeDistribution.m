@@ -29,7 +29,6 @@ function promp = computeDistribution(traj, M, s_ref,c,h, varargin)
     if(flag_draw==1)
         figure;
         plot(promp.PHI{1})
-        figure;
     end
     
     promp.mu_alpha = mean(promp.traj.alpha);
