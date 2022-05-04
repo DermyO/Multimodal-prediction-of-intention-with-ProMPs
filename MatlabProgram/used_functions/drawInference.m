@@ -50,15 +50,6 @@ if(isInterval==1)
     
     OtherPro = ones(length(promp),1);
     OtherPro(i) = 0;
-%%deplacé apres
-%    for tmp = 1:length(OtherPro)
-%         if(OtherPro(tmp) == 1)
-%             clear varOtherPrior otherPrior;
-%             varOtherPrior{tmp} = infTraj.PHI*1.96*sqrt(diag(promp{tmp}.sigma_w ));
-%             otherPrior{tmp} = infTraj.PHI*promp{tmp}.mu_w;
-%             
-%         end
-%    end
     otherP = size(nameFig,2);
     varPrior = infTraj.PHI*1.96*sqrt(diag(promp{i}.sigma_w ));
     posterior = infTraj.PHI*infTraj.mu_w;
@@ -68,14 +59,30 @@ if(isInterval==1)
         cpt=cpt+1;
         subplot(subplotInfo,subplotInfo2,cpt);
         if(isfield(test, 'realTime'))
-            interval = test.realTime(test.totTime) / test.totTime;
+            %interval = (test.realTime(test.totTime)-test.realTime(1)) / (test.totTime-1);
+            interval =  test.realTime;%(test.totTime) / test.totTime;
+            RTInf = (interval(test.nbData)- test.realTime(1)) / (test.nbData-1);%infTraj.timeInf*0.01;
+            intervalInf = [test.realTime(1):RTInf:test.realTime(1) + RTInf*(infTraj.timeInf-1)] ;%/ infTraj.timeInf;
         else
-            interval =test.totTime; % 0.01;
+           % 3/05/22 avant:
+           % interval =test.totTime; % 0.01;
+           % RTInf = infTraj.timeInf*0.01;
+           % intervalInf = RTInf / infTraj.timeInf;
+            
+            promp{i}.meanInterval = 0.01; %TODO QUEST CE QUE CESTTTTTTT !!!
+            %RTInf =    promp{i}.meanInterval;
+            
+            %%%03/05/22 new
+            RTInf = s_ref/infTraj.timeInf;
+            
+            %interval =  [promp{i}.meanInterval:promp{i}.meanInterval: promp{i}.meanInterval*(test.nbData)];
+            intervalInf = [RTInf:RTInf: RTInf*(infTraj.timeInf)] ;%/ infTraj.timeInf
+            
+            
+            
         end
-        RTInf = infTraj.timeInf*0.01;
-        intervalInf = RTInf / infTraj.timeInf;
         if(shaded==1)
-            visualisationShared(prior, varPrior, sum(nbInput), infTraj.timeInf,  vff, 'b', 'shaded', nameFig, 'vecX',[intervalInf:intervalInf:RTInf]);
+            visualisationShared(prior, varPrior, sum(nbInput), infTraj.timeInf,  vff, 'b', 'shaded', nameFig, 'vecX',intervalInf);
             for tmp = 1:length(OtherPro)
                 if(OtherPro(tmp) == 1)
                     %%debut deplacement l53-61
@@ -83,19 +90,19 @@ if(isInterval==1)
                     varOtherPrior{tmp} = infTraj.PHI*1.96*sqrt(diag(promp{tmp}.sigma_w ));
                     otherPrior{tmp} = infTraj.PHI*promp{tmp}.mu_w;
                     %%%fin deplacement
-                    visualisationShared(otherPrior{tmp}, varOtherPrior{tmp}, sum(nbInput), infTraj.timeInf,  vff, 'g', 'shaded', nameFig, 'vecX',[intervalInf:intervalInf:RTInf]);
-                    nameFig = visualisation(otherPrior{tmp}, sum(nbInput), infTraj.timeInf, vff, 'g', nameFig,[intervalInf:intervalInf:RTInf]);
+                    visualisationShared(otherPrior{tmp}, varOtherPrior{tmp}, sum(nbInput), infTraj.timeInf,  vff, 'g', 'shaded', nameFig, 'vecX',intervalInf);
+                    nameFig = visualisation(otherPrior{tmp}, sum(nbInput), infTraj.timeInf, vff, 'g', nameFig,intervalInf);
                 end
             end
             otherP = size(nameFig,2);
-            nameFig = visualisation(prior - varPrior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,[intervalInf:intervalInf:RTInf]);
-            nameFig = visualisation(prior + varPrior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,[intervalInf:intervalInf:RTInf]);
-            nameFig = visualisation(prior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,[intervalInf:intervalInf:RTInf]);
+            nameFig = visualisation(prior - varPrior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,intervalInf);
+            nameFig = visualisation(prior + varPrior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,intervalInf);
+            nameFig = visualisation(prior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,intervalInf);
             prevG = size(nameFig,2);
-            visualisationShared(posterior, varPosterior, sum(nbInput), infTraj.timeInf,  vff,'r', 'shaded', nameFig,'vecX', [intervalInf:intervalInf:RTInf]);
-            nameFig = visualisation(posterior, sum(nbInput), infTraj.timeInf, vff, 'r',  nameFig,[intervalInf:intervalInf:RTInf]);
+            visualisationShared(posterior, varPosterior, sum(nbInput), infTraj.timeInf,  vff,'r', 'shaded', nameFig,'vecX', intervalInf);
+            nameFig = visualisation(posterior, sum(nbInput), infTraj.timeInf, vff, 'r',  nameFig,intervalInf);
         else
-            visualisationShared(prior, varPrior, sum(nbInput), infTraj.timeInf,  vff, 'b', nameFig, 'vecX',[intervalInf:intervalInf:RTInf]);
+            visualisationShared(prior, varPrior, sum(nbInput), infTraj.timeInf,  vff, 'b', nameFig, 'vecX',intervalInf);
             for tmp = 1:length(OtherPro)
                 if(OtherPro(tmp) == 1)
                     %%debut deplacement l53-61
@@ -103,20 +110,20 @@ if(isInterval==1)
                     varOtherPrior{tmp} = infTraj.PHI*1.96*sqrt(diag(promp{tmp}.sigma_w ));
                     otherPrior{tmp} = infTraj.PHI*promp{tmp}.mu_w;
                     %%%fin deplacement
-                    visualisationShared(otherPrior{tmp}, varOtherPrior{tmp}, sum(nbInput), infTraj.timeInf,  vff, 'g', nameFig, 'vecX',[intervalInf:intervalInf:RTInf]);
-                    nameFig = visualisation(otherPrior{tmp}, sum(nbInput), infTraj.timeInf, vff, 'g', nameFig,[intervalInf:intervalInf:RTInf]);
+                    visualisationShared(otherPrior{tmp}, varOtherPrior{tmp}, sum(nbInput), infTraj.timeInf,  vff, 'g', nameFig, 'vecX',intervalInf);
+                    nameFig = visualisation(otherPrior{tmp}, sum(nbInput), infTraj.timeInf, vff, 'g', nameFig,intervalInf);
                 end
             end
             otherP = size(nameFig,2);
             
-            nameFig = visualisation(prior - varPrior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,[intervalInf:intervalInf:RTInf]);
-            nameFig = visualisation(prior + varPrior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,[intervalInf:intervalInf:RTInf]);
+            nameFig = visualisation(prior - varPrior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,intervalInf);
+            nameFig = visualisation(prior + varPrior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,intervalInf);
             
-            nameFig = visualisation(prior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,[intervalInf:intervalInf:RTInf]);
+            nameFig = visualisation(prior, sum(nbInput), infTraj.timeInf, vff, 'b', nameFig,intervalInf);
             prevG = size(nameFig,2);
-            visualisationShared(posterior, varPosterior, sum(nbInput), infTraj.timeInf,  vff,'r', nameFig,'vecX', [intervalInf:intervalInf:RTInf]);
+            visualisationShared(posterior, varPosterior, sum(nbInput), infTraj.timeInf,  vff,'r', nameFig,'vecX', intervalInf);
             
-            nameFig = visualisation(posterior, sum(nbInput), infTraj.timeInf, vff, 'r', nameFig,[intervalInf:intervalInf:RTInf]);
+            nameFig = visualisation(posterior, sum(nbInput), infTraj.timeInf, vff, 'r', nameFig,intervalInf);
         end
         
         
@@ -124,15 +131,20 @@ if(isInterval==1)
         
         newG = size(nameFig,2);
         if(isfield(test, 'realTime'))
-            nameFig(size(nameFig,2) + 1) = plot( test.realTime,test.yMat(:,vff), ':k', 'linewidth', 2);
+            nameFig(size(nameFig,2) + 1) = plot(test.realTime,test.yMat(:,vff), ':k', 'linewidth', 2);
         else
-            nameFig(size(nameFig,2) + 1) = plot(test.yMat(:,vff), ':k', 'linewidth', 2);
+            vall = s_ref / size(test.yMat(:,vff),1);
+            testInterval = [vall:vall:s_ref];
+            nameFig(size(nameFig,2) + 1) = plot(testInterval,test.yMat(:,vff), ':k', 'linewidth', 2); %03/05/22 plot(intervalInf,test.yMat(:,vff), ':k', 'linewidth', 2);
         end
-        %visualisation2(test.yMat,sum(nbInput), test.totTime,vff, ':k', 1, nameFig);hold on;
         dtG = size(nameFig,2);
-        if(ismember(vff,dataReco))%<= nbInput(1))
+        if(ismember(vff,dataReco))
             cpt2 = cpt2 +1 ;
-            nameFig(size(nameFig,2) + 1) = plot([interval:interval:test.nbData*interval],test.partialTraj(1+ test.nbData*(cpt2-1):test.nbData*(cpt2)),'.-k','linewidth',3);
+            if(isfield(test, 'realTime'))
+                nameFig(size(nameFig,2) + 1) = plot(test.realTime(1:test.nbData),test.partialTraj(1+ test.nbData*(cpt2-1):test.nbData*(cpt2)),'.-k','linewidth',3);
+            else 
+                nameFig(size(nameFig,2) + 1) = plot(testInterval(1:test.nbData),test.partialTraj(1+ test.nbData*(cpt2-1):test.nbData*(cpt2)),'.-k','linewidth',3);
+            end
             dnG = size(nameFig,2);
         end
         
