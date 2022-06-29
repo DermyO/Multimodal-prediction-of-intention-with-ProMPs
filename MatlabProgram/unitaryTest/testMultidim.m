@@ -10,7 +10,7 @@ addpath('../used_functions');
 
 %%%%%%%%%%%%%%%VARIABLES, please look at the README
 
-inputName = {'x', 'y'};%label of your inputs
+inputName = {'x', 'y', 'z'};%label of your inputs
 s_ref=100; %reference number of samples
 nbInput(1) = 1; %number of inputs used during the inference (here Cartesian position)
 nbInput(2) = 1;
@@ -68,8 +68,9 @@ test{1} = test{1}{1};
 test{2} = test{2}{1};
 
 %plot recoverData
-%drawRecoverData(t{1}, inputName, 'Specolor','m','namFig', 1);
-%drawRecoverData(t{2}, inputName, 'Specolor','k','namFig', 1);
+
+%drawRecoverData3(t{1}, inputName, 'Specolor','m','namFig', 1);
+%drawRecoverData3(t{2}, inputName, 'Specolor','k','namFig', 1);
 
 %compute the distribution for each kind of trajectories.
 promp{1} = computeDistribution(train{1}, M, s_ref,c,h);%, 'Draw');
@@ -77,6 +78,8 @@ promp{2} = computeDistribution(train{2}, M, s_ref,c,h);%, 'Draw');
 %plot distribution
 drawDistribution(promp{1}, inputName,s_ref);
 drawDistribution(promp{2}, inputName,s_ref);
+
+
 %plot RBF
 %drawBasisFunction(promp{1}.PHI_norm, M);
 
@@ -101,3 +104,52 @@ infTraj = inference(promp, test{1}, M, s_ref, c, h, test{1}.nbData, expNoise, ex
 drawInference(promp,inputName,infTraj, test{1},s_ref, 'Interval', [1,2]);
 drawInferenceRescaled(promp,{'y=x/2 + 5', 'y=sin((x/2 + 5))*2 +6'}, infTraj, test{1},s_ref, 'Interval', [1,2])
 drawErrorInference(promp,inputName,infTraj, test{1},s_ref, 1, 'shaded', 'Interval', [1,2])
+
+
+
+%%%%%%%%%2 trial : periodic doesn't fit well the move
+M(1) = 5;
+M(2) = 5;
+dimRBF = 0; 
+for i=1:size(M,2)
+    dimRBF = dimRBF + M(i)*nbInput(i);
+    c(i) = 1.0 / (M(i)-1); %center of gaussians
+    %avant :
+    h(i) = c(1)/1.5;%(M(1)-1); %bandwidth of the gaussians
+ %   s(i) =c(i)/4; %test ori 28/04/2022 car 95 percentile = c(i) + c(i+1) / 2 = mu + 2s => 2s = ci/2 => s = ci/4
+ %   h(i) = 2*s(i)*s(i);
+end
+
+%compute the distribution for each kind of trajectories.
+promp{1} = computeDistribution(train{1}, M, s_ref,c,h, 'Periodic');%, 'Draw');
+promp{2} = computeDistribution(train{2}, M, s_ref,c,h, 'Periodic');%, 'Draw');
+%plot distribution
+drawDistribution(promp{1}, inputName,s_ref);
+drawDistribution(promp{2}, inputName,s_ref);
+
+
+%plot RBF
+drawBasisFunction(promp{1}.PHI_norm, M);
+
+if (strcmp(choice,'ME')==1)
+        expAlpha = promp{1}.mu_alpha;
+else
+    if(strcmp(choice,'MO')==1)
+        %alpha model
+        w = computeAlpha(test{1}.nbData,t, nbInput);
+        promp{1}.w_alpha = w{1};
+        w = computeAlpha(test{2}.nbData,t, nbInput);
+        promp{2}.w_alpha = w{1};
+    end
+        [expAlpha,type, x] = inferenceAlpha(promp,test{1},M,s_ref,c,h,test{1}.nbData, expNoise, choice);
+end
+display(['expAlpha= ', num2str(expAlpha), ' real alpha= ', num2str(test{1}.alpha)]);
+
+%Recognition of the movement
+infTraj = inference(promp, test{1}, M, s_ref, c, h, test{1}.nbData, expNoise, expAlpha);
+
+%draw the infered movement
+drawInference(promp,inputName,infTraj, test{1},s_ref, 'Interval', [1,2]);
+drawInferenceRescaled(promp,{'y=x/2 + 5', 'y=sin((x/2 + 5))*2 +6'}, infTraj, test{1},s_ref, 'Interval', [1,2])
+drawErrorInference(promp,inputName,infTraj, test{1},s_ref, 1, 'shaded', 'Interval', [1,2])
+
