@@ -12,17 +12,34 @@ function fakeData = fakeData2(promp, nbProMP, n,t, nbInput,M,s_bar,c,h,expNoise,
 
 has_ymin=0;
 figNumber =10;
-flag_file = 1;
+flag_file = 0;
 kernel = 'gaussian';
+oulad=0;
+flag_plot = 0;
 if (~isempty(varargin))
     for i=1:length(varargin)
         if(strcmp(varargin{i},'fig')==1)
             figNumber = varargin{i+1};
+            flag_plot =1;
         elseif(strcmp(varargin{i},'ymin')==1)
             has_ymin = 1;
             ymin = varargin{i+1};
         elseif(strcmp(varargin{i},'Periodic')==1)
             kernel = 'Periodic';
+        elseif(strcmp(varargin{i},'save')==1)
+            flag_file = 1;
+        elseif(strcmp(varargin{i},'OULAD')==1) %specific to OULAD data clicks/marks/delays
+            oulad = varargin{i+1};
+            dateExam = [23,25,51,53,79,81,114,116,149,151,170,200,206,240];
+            idTableExam0 = zeros(size(dateExam));
+            idTableExam = zeros(size(dateExam));
+            idTableExam2 = zeros(size(dateExam));
+            %knowing that data goes from -18 -11 ... 261 (all 7 days) ==> 40
+            for k =1:size(dateExam,2)
+                idTableExam0(k) = floor((dateExam(k) +18)/7)+1;
+                idTableExam(k) = floor((dateExam(k) +18)/7)+1 + s_bar;
+                idTableExam2(k) = floor((dateExam(k) +18)/7)+1 + s_bar*2;
+            end
         end
     end
 end
@@ -41,13 +58,28 @@ switch nbProMP
     otherwise
         col = 'm';
 end
-if(has_ymin==0)
-    drawDistribution(promp, inputName,s_bar, 'col', col, 'ymin', [0,0,-50],'ymax', [1500,100,300], 'xmin', [1,1,1], 'xmax', [t{1}.totTime(1),t{1}.totTime(1),t{1}.totTime(1)], 'fig',figNumber);
-else
-    drawDistribution(promp, inputName,s_bar, 'col', col, 'ymin', ymin, 'fig',figNumber);  
-    
+
+if(flag_plot==1)
+    if(oulad == 0)
+        if(has_ymin==0)
+            drawDistribution(promp, inputName,s_bar, 'col', col, 'ymin', [0,0,-50],'ymax', [1500,100,300], 'xmin', [1,1,1], 'xmax', [t{1}.totTime(1),t{1}.totTime(1),t{1}.totTime(1)], 'fig',figNumber);
+        else
+            drawDistribution(promp, inputName,s_bar, 'col', col, 'ymin', ymin, 'fig',figNumber);  
+        end
+    else 
+        if(has_ymin==0)
+            drawDistribution(promp, inputName,s_bar, 'col', col, 'ymin', [0,0,-50,-100,-100,-100],'ymax', [1500,100,300,1500,1500,1500], 'xmin', [1,1,1,1,1,1], 'xmax', [t{1}.totTime(1),t{1}.totTime(1),t{1}.totTime(1),t{1}.totTime(1),t{1}.totTime(1),t{1}.totTime(1)], 'fig',figNumber, 'OULAD');
+        else
+            drawDistribution(promp, inputName,s_bar, 'col', col, 'ymin', ymin, 'fig',figNumber, 'OULAD');
+        end
+    end
 end
-for new=1:n  %for all trajectories to create
+
+%for all trajectories to create, 
+%we initialize the trajectories from two random real trajectories of the cluster (Yinit = a*t(1) + b*t(2), a + b =1).
+%then, we compute the continuation of this new trajectory using the
+%corresponding ProMP.
+for new=1:n  
     i = floor(1 + (promp.traj.nbTraj - 1)*rand(1)); %random traj 1
     %random traj2
     j=i; 
@@ -88,47 +120,108 @@ for new=1:n  %for all trajectories to create
     alphaTraj = 1;
     promps{1} = promp;
     fakeData{new} = inference(promps, test, M, s_bar, c, h, test.nbData, expNoise, alphaTraj, nbInput, kernel);
-    fig = figure(figNumber);
     posterior{new} = fakeData{new}.PHI*fakeData{new}.mu_w;
     posterior{new} = controlExtremValues(posterior{new},s_bar);
 end
 
-%create file with new data
+%create file with new data    posterior{new} = fakeData{new}.PHI*fakeData{new}.mu_w;
+
 if(flag_file ==1)
     className = ["Distinction","Pass","Withdrawn","Fail"];
-    name = strcat('fake_data_Periodic2_', className(nbProMP), '.csv')
+    name = strcat('fake_data_', kernel, '_', className(nbProMP), '.csv')
     fid = fopen(name, 'wt')
-    fprintf(fid, 'totClicks_1,totClicks_2,totClicks_3,totClicks_4,totClicks_5,totClicks_6,totClicks_7,totClicks_8,totClicks_9,totClicks_10,totClicks_11,totClicks_12,totClicks_13,totClicks_14,score_1,score_2,score_3,score_4,score_5,score_6,score_7,score_8,score_9,score_10,score_11,score_12,score_13,score_14,delay_1,delay_2,delay_3,delay_4,delay_5,delay_6,delay_7,delay_8,delay_9,delay_10,delay_11,delay_12,delay_13,delay_14\n');
+    
+    
+     dateExam = [23,25,51,53,79,81,114,116,149,151,170,200,206,240];
+	 idTableExam0 = zeros(size(dateExam));
+     idTableExam = zeros(size(dateExam));
+     idTableExam2 = zeros(size(dateExam));
+            %knowing that data goes from -18 -11 ... 261 (all 7 days) ==> 40
+	 for k =1:size(dateExam,2)
+        idTableExam0(k) = floor((dateExam(k) +18)/7)+1;
+        idTableExam(k) = floor((dateExam(k) +18)/7)+1 + s_bar;
+        idTableExam2(k) = floor((dateExam(k) +18)/7)+1 + s_bar*2;
+     end
+    
+    
+    %create string name
+    s= "";
+    for i=1:40
+        val = (i-1)*7-18;
+        s = strcat(s,"totClicks_",int2str(val),",");
+    end
+    s = strcat(s, "score_1,score_2,score_3,score_4,score_5,score_6,score_7,score_8,score_9,score_10,score_11,score_12,score_13,score_14,delay_1,delay_2,delay_3,delay_4,delay_5,delay_6,delay_7,delay_8,delay_9,delay_10,delay_11,delay_12,delay_13,delay_14\n");
+    fprintf(fid, s);
     for i=1:n
         sinit= "";
-        for time=1:41
+        for time=1:67%41
             sinit=strcat(sinit, "%f,");
         end
         sinit= strcat(sinit,"%f\n");
         
-        fprintf(fid, sinit, posterior{i}(1), posterior{i}(2), posterior{i}(3), posterior{i}(4), posterior{i}(5), posterior{i}(6), posterior{i}(7), posterior{i}(8), posterior{i}(9), posterior{i}(10), posterior{i}(11), posterior{i}(12), posterior{i}(13), posterior{i}(14), posterior{i}(15), posterior{i}(16), posterior{i}(17), posterior{i}(18), posterior{i}(19), posterior{i}(20), posterior{i}(21), posterior{i}(22), posterior{i}(23), posterior{i}(24), posterior{i}(25), posterior{i}(26), posterior{i}(27), posterior{i}(28), posterior{i}(29), posterior{i}(30), posterior{i}(31), posterior{i}(32), posterior{i}(33), posterior{i}(34), posterior{i}(35), posterior{i}(36), posterior{i}(37), posterior{i}(38), posterior{i}(39), posterior{i}(40), posterior{i}(41), posterior{i}(42));
+        pp = zeros(68,1);
+        
+        pp(1:40) = posterior{i}(1:40);
+        pp(40+1:40+14) = posterior{i}(idTableExam);
+        pp(40+14+1:40+28) = posterior{i}(idTableExam2);
+
+        fprintf(fid, sinit, pp);
     end
     fclose(fid);  
 end
 
 
-for i=1:n
-    mintmp = s_bar;
-    if(sum(nbInput)>1)
-        for inp = 1:sum(nbInput)
-            subplot(sum(nbInput),1,inp);
-            fig(size(fig,2) + 1) =  plot([alphaTraj:alphaTraj:mintmp], posterior{i}(1 + mintmp*(inp-1) :mintmp*inp), 'r');hold on;
-            if(inp <= nbInput(1))
-                fig(size(fig,2) + 1) =  plot([alphaTraj:alphaTraj:test2{i}.nbData], test2{i}.partialTraj(1 + test2{i}.nbData*(inp-1) :test2{i}.nbData*inp), 'ok');hold on;
+if(flag_plot==1)
+	fig = figure(figNumber);
+    if(oulad ==0)
+        for i=1:n %for all created trajectories
+            mintmp = s_bar;
+            if(sum(nbInput)>1)%if multidim
+                for inp = 1:sum(nbInput) %for all dimension of the trajectory
+                    if(nbInput<4) 
+                        subplot(sum(nbInput),1,inp); %we create a subplot
+                    else
+                            subplot(sum(nbInput)/2,2,inp); %we create a subplot
+                    end
+                    fig(size(fig,2) + 1) =  plot([alphaTraj:alphaTraj:mintmp], posterior{i}(1 + mintmp*(inp-1) :mintmp*inp), 'm');hold on;
+                    if(inp <= nbInput(1))
+                        fig(size(fig,2) + 1) =  plot([alphaTraj:alphaTraj:test2{i}.nbData], test2{i}.partialTraj(1 + test2{i}.nbData*(inp-1) :test2{i}.nbData*inp), 'ok');hold on;
+                    end
+                end
+            else % we plot posterior trajectory (red) from the init trajectory (o in black)
+                fig(size(fig,2) + 1) =  plot([alphaTraj:alphaTraj:mintmp], posterior{i}(1:mintmp), 'm');hold on;
+                fig(size(fig,2) + 1) =  plot([alphaTraj:alphaTraj:test2{i}.nbData], test2{i}.partialTraj(1 :test2{i}.nbData), 'ok');hold on;
             end
         end
-    else
-        fig(size(fig,2) + 1) =  plot([alphaTraj:alphaTraj:mintmp], posterior{i}(1:mintmp), 'r');hold on;
-        fig(size(fig,2) + 1) =  plot([alphaTraj:alphaTraj:test2{i}.nbData], test2{i}.partialTraj(1 :test2{i}.nbData), 'ok');hold on;
+    elseif(oulad ==1) % input 2 & 3 = exam & date ==> only specific dates.
+        for i=1:n %for all created trajectories
+           mintmp = s_bar;
+           %create subplot for clicks
+           if(sum(nbInput)<4) 
+               subplot(sum(nbInput),1,1); %we create a subplot
+           else
+               subplot(sum(nbInput)/2,2,1); %we create a subplot
+           end
+           fig(size(fig,2) + 1) =  plot([alphaTraj:alphaTraj:mintmp], posterior{i}(1:mintmp), '--m');hold on;
+           fig(size(fig,2) + 1) =  plot([alphaTraj:alphaTraj:test2{i}.nbData], test2{i}.partialTraj(1:test2{i}.nbData), 'ok');hold on;
+           %create subplot for date then exam
+           if(sum(nbInput)<4) 
+            subplot(sum(nbInput),1,2);
+           else
+            subplot(sum(nbInput)/2,2,2);
+           end
+           fig(size(fig,2) + 1) =  plot(idTableExam0, posterior{i}(idTableExam), ':xm');hold on;
+           
+           if(sum(nbInput)<4) 
+           	subplot(sum(nbInput),1,3);
+           else
+            subplot(sum(nbInput)/2,2,3);
+           end
+            fig(size(fig,2) + 1) =  plot(idTableExam0, posterior{i}(idTableExam2), ':xm');hold on;
+  
+
+        end
+
     end
-end
-
-
-
 end
 
