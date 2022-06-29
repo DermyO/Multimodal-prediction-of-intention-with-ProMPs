@@ -17,12 +17,15 @@ function [trajectories] = loadTrajectoryPersonas6(PATH, l_id, varargin)
 
 referenceNumber= -1;
 maxTraj=-1;
+s_bar = 14;
 %Treat varargin possibilities
 for j=1:length(varargin)
     if(strcmp(varargin{j},'refNb')==1)
         referenceNumber = varargin{j+1};
     elseif(strcmp(varargin{j},'maxTraj')==1)
         maxTraj = varargin{j+1};
+    elseif(strcmp(varargin{j},'s_bar')==1)
+        s_bar = varargin{j+1};
     end
 end
 
@@ -46,9 +49,9 @@ for i=1:size(data_tot,1)
     if(idxStu(class)==0)
         trajectories{class}.nbInput = 1; %nbClick global
         idxStu(class) = 1;
-        trajectories{class}.totTime(1) = 14;
-        trajectories{class}.y{1} = zeros(14,1);
-        trajectories{class}.yMat{1} = zeros(14,1);
+        trajectories{class}.totTime(1) = s_bar;
+        trajectories{class}.y{1} = zeros(s_bar,1);
+        trajectories{class}.yMat{1} = zeros(s_bar,1);
         if(referenceNumber ~=-1)
             trajectories{class}.alpha(1) = referenceNumber / trajectories{class}.totTime(1);
         else
@@ -66,9 +69,9 @@ for i=1:size(data_tot,1)
             break;
         end
         stu(class) = data_tot.id_student(i);
-        trajectories{class}.y{idxStu(class)} =zeros(14,1);
-        trajectories{class}.yMat{idxStu(class)} =zeros(14,1);
-        trajectories{class}.totTime(idxStu(class)) = 14;
+        trajectories{class}.y{idxStu(class)} =zeros(s_bar,1);
+        trajectories{class}.yMat{idxStu(class)} =zeros(s_bar,1);
+        trajectories{class}.totTime(idxStu(class)) = s_bar;
         if(referenceNumber ~=-1)
             trajectories{class}.alpha(idxStu(class)) = referenceNumber / trajectories{class}.totTime(idxStu(class));
         else
@@ -78,7 +81,7 @@ for i=1:size(data_tot,1)
         
     trajectories{class}.y{idxStu(class)} =  data_tot(i,3:size(data_tot,2)).Variables';
     
-    for timeTmp=14:-1:2
+    for timeTmp=s_bar:-1:2
          trajectories{class}.y{idxStu(class)}(timeTmp) = trajectories{class}.y{idxStu(class)}(timeTmp) - trajectories{class}.y{idxStu(class)}(timeTmp-1) ;
     end
     trajectories{class}.yMat{idxStu(class)}=  trajectories{class}.y{idxStu(class)};%data_tot(i,3:size(data_tot,2)).Variables';

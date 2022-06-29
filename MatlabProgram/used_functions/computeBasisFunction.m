@@ -65,7 +65,7 @@ elseif(strcmp(kernel, 'Periodic')==1)
             end
             
             %normalization of the RBF
-            sumBI = sum(basis{k}(t,:));
+           sumBI = sum(basis{k}(t,:));
             phi{k}(t,1) = basis{k}(t,1) / sumBI ;
             for i = 1 : M(k)
                 phi{k}(t,i) = basis{k}(t,i) / sumBI;
@@ -73,7 +73,29 @@ elseif(strcmp(kernel, 'Periodic')==1)
         end
     end
     
+elseif(strcmp(kernel, 'Student')==1)
+    for k=1:length(M)
+        for i = 1 : M(k)
+            center(k,i) = c(k)*(i-1);
+        end
+        
+        for t=1:totalTime
+            %creating a basis functions model (time*nbFunctions)
+            for i = 1 : M(k)
+                val{k} = cos(2*pi*(alpha*t*(1/s_ref)-center(k,i)))/(2*h(k));
+                basis{k}(t,i) = exp(val{k});
+            end
+            
+            %normalization of the RBF
+      %      sumBI = sum(basis{k}(t,:));
+            phi{k}(t,1) = basis{k}(t,1);% / sumBI ;
+            for i = 1 : M(k)
+                phi{k}(t,i) = basis{k}(t,i) ;%/ sumBI;
+            end
+        end
+    end
     
+        
     
 end
 

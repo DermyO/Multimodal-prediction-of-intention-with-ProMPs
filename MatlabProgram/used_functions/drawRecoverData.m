@@ -90,10 +90,10 @@ elseif(isInterval==1)
         % end
     end        
 else
-    for l=1:traj.nbInput(1)  
-        subplot(traj.nbInput(1),1,l)
+    for l=1:sum(traj.nbInput)
+        subplot(sum(traj.nbInput),1,l)
         for i=1:traj.nbTraj     
-            fig22 = visualisation(traj.y{i},traj.nbInput,traj.totTime(i), l, col,fig22);hold on;
+            fig22 = visualisation(traj.y{i},sum(traj.nbInput),traj.totTime(i), l, col,fig22);hold on;
         end
        % list1 =  {'sep','oct','nov','dec','jan','fev','mar','avr','mai','jun','jul','aou'};
        if(isfield(traj,'inputName')) 
@@ -102,7 +102,7 @@ else
         %ylabel(list{l}, 'fontsize', fsize);
         xticks(linspace(1,traj.totTime(i),3));%[1 2 3 4 5 6 7 8 9 10 11 12])
         if(isfield(traj, "realTime"))
-            xticklabels([traj.realTime{i}(1),traj.realTime{i}(traj.totTime(i)/2),traj.realTime{i}(traj.totTime(i))]);
+            xticklabels([traj.realTime{i}(1),traj.realTime{i}(ceil(traj.totTime(i)/2)),traj.realTime{i}(traj.totTime(i))]);
         end
     end
 end

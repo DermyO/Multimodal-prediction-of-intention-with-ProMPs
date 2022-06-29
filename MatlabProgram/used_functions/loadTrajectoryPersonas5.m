@@ -1,4 +1,4 @@
-function [tt] = loadTrajectoryPersonas5(PATH, trajectory,nbInput)
+function [tt] = loadTrajectoryPersonas5(PATH, trajectory,nbInput, varargin)
 %LOADTRAJECTORYPERSONAS completes trajectories with data contained in the folder PATH.
 %
 %INPUTS:
@@ -14,6 +14,18 @@ function [tt] = loadTrajectoryPersonas5(PATH, trajectory,nbInput)
 
 %This function add to the object "trajectory", the input variable (score ;
 %delay) using the student id.
+
+
+
+type = 1;
+if (~isempty(varargin))
+    for i=1:length(varargin)
+        if(strcmp(varargin{i},'type')==1)
+            type=0;
+        end
+    end
+end
+
 
 
 %Retrieve all data in data{j} cells for each trajectory, and put 
@@ -60,9 +72,8 @@ for i=1:size(id_stus,1)
         continue;
     end
     cpt = cpt+1;
-    %%%
-    %%%Then, create score and delay dimension of the trajectory to have the
-    %%%same time axis.
+    %Then, create score and delay dimension of the trajectory to have the
+    %same time axis.
     %init : before the first exam, same value.
     j = 1; %index exam
     t = 1 ; %index realTime
@@ -73,44 +84,65 @@ for i=1:size(id_stus,1)
         delayTmp(t) = delays(i,j);
         t = t+1;
     end
-    %general case
-    %init line values
-    %score line
-    as = (dateExam(j+1) - dateExam(j)) / (scores(i, j+1) - scores(i,j));
-    bs = dateExam(j) - as*scores(i,j);
-    %delay line
-    ad = (dateExam(j+1) - dateExam(j)) / (delays(i, j+1) - delays(i,j));
-    bd = dateExam(j) - ad*delays(i,j);
-    while ((t <= trajectory.totTime(idT)) && (trajectory.realTime{idT}(t) < dateExam(14)))
-        %if require to update line
-        if(trajectory.realTime{idT}(t) > dateExam(j+1))
-            %searching the current line
-            while(trajectory.realTime{idT}(t) > dateExam(j+1))
-                j = j+1;
+    
+    
+    if(type==1)
+        %general case
+        %init line values
+        %score line
+        as = (dateExam(j+1) - dateExam(j)) / (scores(i, j+1) - scores(i,j));
+        bs = dateExam(j) - as*scores(i,j);
+        %delay line
+        ad = (dateExam(j+1) - dateExam(j)) / (delays(i, j+1) - delays(i,j));
+        bd = dateExam(j) - ad*delays(i,j);
+        while ((t <= trajectory.totTime(idT)) && (trajectory.realTime{idT}(t) < dateExam(14)))
+            %if require to update line
+            if(trajectory.realTime{idT}(t) > dateExam(j+1))
+                %searching the current line
+                while(trajectory.realTime{idT}(t) > dateExam(j+1))
+                    j = j+1;
+                end
+                %udate line values
+                %score line
+                as = (dateExam(j+1) - dateExam(j)) / (scores(i, j+1) - scores(i,j));
+                bs = dateExam(j) - as*scores(i,j);
+                %delay line
+                ad = (dateExam(j+1) - dateExam(j)) / (delays(i, j+1) - delays(i,j));
+                bd = dateExam(j) - ad*delays(i,j);
             end
-            %udate line values
-            %score line
-            as = (dateExam(j+1) - dateExam(j)) / (scores(i, j+1) - scores(i,j));
-            bs = dateExam(j) - as*scores(i,j);
-            %delay line
-            ad = (dateExam(j+1) - dateExam(j)) / (delays(i, j+1) - delays(i,j));
-            bd = dateExam(j) - ad*delays(i,j);
+            if(as ~=0 && as ~=Inf)
+                scoreTmp(t) = (trajectory.realTime{idT}(t) - bs)/as;
+            else
+                scoreTmp(t) = scores(i, j);
+            end
+            if(ad ~=0 && ad ~= Inf)
+                delayTmp(t) = (trajectory.realTime{idT}(t) - bd)/ad ;
+                if(isnan(delayTmp(t)))
+                    print('isnan');
+                end
+            else
+                delayTmp(t) = delays(i,j);
+            end
+            t = t+1;
         end
-        if(as ~=0 && as ~=Inf)
-            scoreTmp(t) = (trajectory.realTime{idT}(t) - bs)/as;
-        else
+    else
+        %general case
+        while ((t <= trajectory.totTime(idT)) && (trajectory.realTime{idT}(t) < dateExam(14)))
+            %if require to update line
+            if(trajectory.realTime{idT}(t) > dateExam(j+1))
+                %searching the current line
+                while(trajectory.realTime{idT}(t) > dateExam(j+1))
+                    j = j+1;
+                end
+            end           
             scoreTmp(t) = scores(i, j);
-        end
-        if(ad ~=0 && ad ~= Inf)
-            delayTmp(t) = (trajectory.realTime{idT}(t) - bd)/ad ;
-            if(isnan(delayTmp(t)))
-                print('isnan');
-            end
-        else
             delayTmp(t) = delays(i,j);
+            t = t+1;
         end
-        t = t+1;
     end
+    
+    
+    
     %when the last exam has been spend, all the resting line equals to last
     %values
     while(t <= trajectory.totTime(idT))

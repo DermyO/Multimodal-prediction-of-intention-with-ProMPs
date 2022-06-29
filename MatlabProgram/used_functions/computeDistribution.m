@@ -1,9 +1,8 @@
 function promp = computeDistribution(traj, M, s_ref,c,h, varargin)
 %COMPUTEDISTRIBUTION
 %This function computes the distribution for each kind of trajectory.
-
 %varargin: 
-%- Draw to plot gaussians, weights and so on.
+%- Draw to plot gaussians, choice of the RBF .
 
     flag_draw = 0;
     kernel= 'gaussian';

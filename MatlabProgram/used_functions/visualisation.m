@@ -16,28 +16,20 @@ end
 
 if (nargin >6) 
     if(isa(col1, 'char'))
-        %for i=1:x
          i=choice;
            nameFig(tall + 1) = plot(varargin{1},val(i,:), col1,'linewidth',1); hold on;
-        %end
     else
-        %for i=1:x 
          i=choice;
           nameFig(tall + 1) = plot(varargin{1},val(i,:), 'Color', col1,'linewidth',1); hold on;
-        %end
     end
     y = nameFig;
 else
     if(isa(col1, 'char'))
-        %for i=1:x
          i=choice;
            nameFig(tall + 1) = plot(val(i,:), col1,'linewidth',1); hold on;
-        %end
     else
-        %for i=1:x 
          i=choice;
           nameFig(tall + 1) = plot(val(i,:), 'Color', col1,'linewidth',1); hold on;
-        %end
     end
      y = nameFig;
     end
