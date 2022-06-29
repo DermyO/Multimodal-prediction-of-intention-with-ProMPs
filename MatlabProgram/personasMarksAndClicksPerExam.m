@@ -38,15 +38,19 @@ t{4}.inputName = inputName;
 
 %Then we adapt variables to add score and delay data
 nbInput(2) = 2 ;
-M(2) = 14;
+M(2) = 10;
 inputName = {'clicks', 'score', 'delai'};
 %some variable computation to create basis function, you might have to
 %change them
 dimRBF = 0;
 for i=1:size(M,2)
     dimRBF = dimRBF + M(i)*nbInput(i);
-    c(i) = 1.0 / (M(i));%center of gaussians
-    h(i) = c(i)/(5*M(i));%50;%150;%M(i); %bandwidth of gaussians
+    
+    c(i) = 1/(M(i)-1);
+    s(i) = c(i)/4;
+    h(i) = 2*s(i)*s(i);
+    %c(i) = 1.0 / (M(i));%center of gaussians
+    %h(i) = c(i)/(5*M(i));%50;%150;%M(i); %bandwidth of gaussians
 end
 
 t{1} = loadTrajectoryPersonas5('Data/Personas/GHPrimaire_DISTINCTION_id.csv', t{1}, nbInput);
@@ -68,7 +72,7 @@ t{4} = loadTrajectoryPersonas5('Data/Personas/GHPrimaire_FAIL_id.csv', t{4}, nbI
 [train{3},test{3}] = partitionTrajectory(t{3},1,percentData,s_bar);
 [train{4},test{4}] = partitionTrajectory(t{4},1,percentData,s_bar);
 %Compute the distribution for each kind of trajectories.
-promp{1} = computeDistribution(train{1}, M, s_bar,c,h, 'Draw');
+promp{1} = computeDistribution(train{1}, M, s_bar,c,h);%, 'Draw');
 promp{2} = computeDistribution(train{2}, M, s_bar,c,h);
 promp{3} = computeDistribution(train{3}, M, s_bar,c,h);
 promp{4} = computeDistribution(train{4}, M, s_bar,c,h);
@@ -81,15 +85,31 @@ display('Drawing Distributions ...')
 % drawDistribution(promp{4}, inputName,s_bar, 'without', 'shaded', 'col', 'k', 'xLabelName', 'date examens', 'ymin', [0,0,-100],'ymax', [3000,100,250]);
 
 %result paper
- drawDistribution(promp{1}, inputName,s_bar, 'col', 'b','without', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded');
- drawDistribution(promp{2}, inputName,s_bar, 'col', 'g', 'without', 'xLabelName', 'date examens', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded');
- drawDistribution(promp{3}, inputName,s_bar, 'col', 'r', 'without' ,'xLabelName', 'date examens', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded');
- drawDistribution(promp{4}, inputName,s_bar, 'col', 'k', 'without','xLabelName', 'date examens', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded');
+drawDistribution(promp{1}, inputName,s_bar, 'col', 'b', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded');
+drawDistribution(promp{2}, inputName,s_bar, 'col', 'g', 'xLabelName', 'date examens', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded');
+drawDistribution(promp{3}, inputName,s_bar, 'col', 'r' ,'xLabelName', 'date examens', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded');
+drawDistribution(promp{4}, inputName,s_bar, 'col', 'k','xLabelName', 'date examens', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded');
+%drawDistribution(promp{1}, inputName,s_bar, 'col', 'b', 'interval', [3], 'ymin', [-60],'ymax', [50], 'xmin', [1], 'xmax', [14]);
+%drawDistribution(promp{1}, inputName,s_bar, 'col', 'b', 'interval', [1:3],'Figure',11);
 
 
-drawDistribution(promp{1}, inputName,s_bar, 'col', 'b', 'interval', [3], 'ymin', [-60],'ymax', [50], 'xmin', [1], 'xmax', [14]);
 
-drawDistribution(promp{1}, inputName,s_bar, 'col', 'b', 'interval', [1:3],'Figure',11);
+drawDistribution(promp{1}, inputName,s_bar, 'col', 'b', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded', 'Without', 'Figure',11);
+drawDistribution(promp{2}, inputName,s_bar, 'col', 'g', 'xLabelName', 'date examens', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded', 'without', 'fig',11);
+drawDistribution(promp{3}, inputName,s_bar, 'col', 'r' ,'xLabelName', 'date examens', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded', 'without', 'fig',11);
+drawDistribution(promp{4}, inputName,s_bar, 'col', 'k','xLabelName', 'date examens', 'ymin', [0,0,-50],'ymax', [1500,100,250], 'xmin', [1,1,1], 'xmax', [14,14,14], 'shaded', 'without', 'fig',11);
+
+
+
+
+%plot RBF
+figure;
+
+
+drawPHI(promp{1},M, s_bar, 'b');
+drawPHI(promp{2},M, s_bar, 'g');
+drawPHI(promp{3},M, s_bar, 'r');
+drawPHI(promp{4},M, s_bar, 'k');
 
 nbTotTraj= 0;
 nbTotError = 0;
@@ -98,14 +118,14 @@ matClusterReco = zeros(4,4);
 expNoise = 100;
 
 % Testing cluster recognition for all clusters
-for indTraj = 1:4
+for indTraj = 1:1%4
     nbTraj=0;
     nbError=0;
     trial =indTraj;
     displayOne=1;
     displayOneOk=1;
     disp(['testing trajectory type n°',  num2str(trial) ])
-    for indTest=1: t{indTraj}.nbTraj
+    for indTest=1:1% t{indTraj}.nbTraj
         nbTotTraj = nbTotTraj+1;
         nbTraj = nbTraj+1;
         [train{indTraj},test{indTraj}] = partitionTrajectory(t{indTraj},1,percentData,s_bar, 'Indice', indTest);
@@ -127,12 +147,14 @@ for indTraj = 1:4
             if(displayOne==1)
                 displayOne=0;
                 drawInferenceRescaled(promp,inputName ,infTraj, test{1},s_bar,'Interval', [1:3], 'shaded')
-                % drawInference(promp,inputName,infTraj, test{1},s_bar, 'shaded')
-                % drawErrorInference(promp,inputName,infTraj, test{1},s_bar, trial, 'shaded');
+                drawInference(promp,inputName,infTraj, test{1},s_bar, 'shaded')
+                drawErrorInference(promp,inputName,infTraj, test{1},s_bar, trial, 'shaded');
             end
         elseif(displayOneOk == 1)
             displayOneOk=0;
             drawInferenceRescaled(promp,inputName,infTraj, test{1},s_bar,'Interval', [1:3], 'shaded');
+            drawInference(promp,inputName,infTraj, test{1},s_bar, 'shaded')
+            drawErrorInference(promp,inputName,infTraj, test{1},s_bar, trial, 'shaded');
         end
     end
     disp(['Error percentage of cluster n°', num2str(indTraj),' recognition: ',  num2str((nbError/nbTraj)*100), '%.']);
