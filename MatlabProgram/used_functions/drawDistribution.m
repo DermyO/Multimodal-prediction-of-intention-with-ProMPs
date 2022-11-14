@@ -9,9 +9,7 @@ col1='b';
 col2='m';
 xLabelName = 'Normalized #samples';
 flag_mean = 0;
-flag_realT = 0;
 flag_ymin = 0;
-flag_xmin = 0;
 flag_yminAndMax = 0;
 flag_xminAndMax = 0;
 flag_oulad = 0;
@@ -52,13 +50,10 @@ if(~isempty(varargin))
             numFig= varargin{i+1};
         elseif(strcmp(varargin{i},'mean'))
             flag_mean = 1;
-        elseif(strcmp(varargin{i},'realT'))
-            flag_realT = 1;
         elseif(strcmp(varargin{i}, 'ymin'))
             flag_ymin = 1;
             yminn = varargin{i+1};
         elseif(strcmp(varargin{i}, 'xmin'))
-            flag_xmin = 1;
             xminn = varargin{i+1};
         elseif(strcmp(varargin{i}, 'ymax'))
             flag_yminAndMax = 1;
@@ -116,7 +111,6 @@ for i=reshape(interval',1,[])
                            fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam), '-+b');hold on;
                        else
                            fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam2), '-+b');hold on;
-                       %fig(size(fig,2) + 1) =  plot([promp.traj.interval(j):promp.traj.interval(j):promp.traj.totTime(j)*promp.traj.interval(j)],promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i), strrep(col2,':','+'),'linewidth',0.5);hold on;
                        end
                     end
                 else
@@ -166,18 +160,17 @@ for i=reshape(interval',1,[])
                            fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam), strrep(col2,':',':+'));hold on;
                        else
                            fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam2), strrep(col2,':',':+'));hold on;
-                       %fig(size(fig,2) + 1) =  plot([promp.traj.interval(j):promp.traj.interval(j):promp.traj.totTime(j)*promp.traj.interval(j)],promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i), strrep(col2,':','+'),'linewidth',0.5);hold on;
-                       end
-                    
+                       end  
                   else  
                     mintmp = s_ref;
                     if(mintmp > promp.traj.totTime(j))
                         mintmp = promp.traj.totTime(j);
-                        if(promp.traj.alpha(j) ~=1)
-                            display('erreuuuur');
-                        end
+%                         if(promp.traj.alpha(j) ~=1)
+%                             display('erreuuuur');%%TODO retrouver pourquoi?
+%                         end
                     end
-                    fig(size(fig,2) + 1) =  plot([promp.traj.alpha(j):promp.traj.alpha(j):mintmp], promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i), col2,'linewidth',0.5);hold on;
+                    ssize = mintmp / size(promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i),1);
+                    fig(size(fig,2) + 1) =  plot([ssize:ssize:mintmp], promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i), col2,'linewidth',0.5);hold on;
                   end
                 end
             end
@@ -206,34 +199,17 @@ for i=reshape(interval',1,[])
     
     set(gca, 'fontsize', 20);
     if(flag_yminAndMax)
-       ytmp = ylim;
-       minn = ytmp(1);
-      % if(abs(yminn(cpt)) < abs(minn))
-           minn = yminn(cpt);
-      % end
-       maxx = ytmp(2);
-      % if(abs(ymax(cpt)) < abs(maxx))
-           maxx = ymax(cpt);
-      % end
+       minn = yminn(cpt);
+       maxx = ymax(cpt);
        ylim([minn, maxx]); 
     elseif(flag_ymin)
        ytmp = ylim;
-       minn = ytmp(1);
-       %if(abs(yminn(cpt)) < abs(minn))
-           minn = yminn(cpt);
-       %end
+       minn = yminn(cpt);
        ylim([minn, ytmp(2)]);
     end
     if(flag_xminAndMax)
-       xtmp = xlim;
-       minn = xtmp(1);
-      % if(abs(yminn(cpt)) < abs(minn))
-           minn = xminn(cpt);
-      % end
-       maxx = xtmp(2);
-      % if(abs(ymax(cpt)) < abs(maxx))
-           maxx = xmax(cpt);
-      % end
+       minn = xminn(cpt);
+       maxx = xmax(cpt);
        xlim([minn, maxx]); 
     end
     

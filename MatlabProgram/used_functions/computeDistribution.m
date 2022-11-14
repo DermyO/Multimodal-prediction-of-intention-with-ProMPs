@@ -55,6 +55,14 @@ function promp = computeDistribution(traj, M, s_ref,c,h, varargin)
       %  promp.traj.interval(j) = promp.traj.interval(j)  + promp.traj.realTime{j}(promp.traj.totTime);
     end
     
+    %%temporaire
+%     figure;hold on;
+%     for j=1: promp.traj.nbTraj
+%         plot(w(j,:), '*');hold on;
+%     end
+    
+    
+    
     %computation of the w distribution     
     promp.mu_w = mean(listw)';
     promp.sigma_w = cov(listw); %sometimes have < 0 for forces as it is not

@@ -18,6 +18,7 @@ function [trajectories] = loadTrajectoryPersonas6(PATH, l_id, varargin)
 referenceNumber= -1;
 maxTraj=-1;
 s_bar = 14;
+name = 'DDD_2013B';
 %Treat varargin possibilities
 for j=1:length(varargin)
     if(strcmp(varargin{j},'refNb')==1)
@@ -26,6 +27,8 @@ for j=1:length(varargin)
         maxTraj = varargin{j+1};
     elseif(strcmp(varargin{j},'s_bar')==1)
         s_bar = varargin{j+1};
+    elseif(strcmp(varargin{j},'name')==1)
+        name = varargin{j+1};
     end
 end
 
@@ -95,10 +98,14 @@ trajectories{2}.label = "Pass";
 trajectories{3}.label = "Withdrawn";
 trajectories{4}.label = "Fail";
 
-
-%date of the 14 Exams
-dateExam = [23,25,51,53,79,81,114,116,149,151,170,200,206,240];
-
+if(strcmp(name,'DDD_2013B'))
+    %date of the 14 Exams
+    dateExam = [23,25,51,53,79,81,114,116,149,151,170,200,206,240];
+elseif(strcmp(name,'DDD_2014B'))
+    dateExam = [25,53,74,116,158,200,240];
+else %%%BBB_2013B
+    dateExam = [19,47,54,89,124,159,187,240];
+end
 for class=1:4
     if(maxTraj==-1)
         trajectories{class}.nbTraj = size(trajectories{class}.y,2);
