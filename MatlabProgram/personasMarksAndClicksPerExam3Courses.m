@@ -18,7 +18,7 @@ s_bar= 14 ;
 nbInput(1) = 1 ;
 M(1) =14;
 percentData = 48;
-name = 'DDD_2014B';
+name = 'BBB_2013B';
 
 if(strcmp(name,'BBB_2013B')==1)
     M(1) = 8;

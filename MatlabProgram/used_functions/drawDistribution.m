@@ -13,6 +13,7 @@ flag_ymin = 0;
 flag_yminAndMax = 0;
 flag_xminAndMax = 0;
 flag_oulad = 0;
+flag_persona14d= 0; %to adapt sticks for 14d.
 numFig=10;
 shaded=0;
 without=0;%to not draw original data
@@ -64,6 +65,8 @@ if(~isempty(varargin))
         elseif(strcmp(varargin{i},'OULAD')==1) %specific to OULAD data clicks/marks/delays
             %col2 = strrep(col2,':','+')
             flag_oulad = 1;
+        elseif(strcmp(varargin{i},'personas_14d'))
+            flag_persona14d = 1;
         end
     end
 end
@@ -97,21 +100,21 @@ for i=reshape(interval',1,[])
             else
                 if(flag_oulad==1 && i>1) %case mark or delays in oulad dataset
                     for j = 1 : max(promp.traj.nbTraj,10)
-                       dateExam = [23,25,51,53,79,81,114,116,149,151,170,200,206,240];
-                       idTableExam0 = zeros(size(dateExam));
-                       idTableExam = zeros(size(dateExam));
-                       idTableExam2 = zeros(size(dateExam));
-                       %knowing that data goes from -18 -13 ... 256 (all 5 days) ==> 55
-                       for k =1:size(dateExam,2)
-                           idTableExam0(k) = floor((dateExam(k) +18)/5)+1;
-                           idTableExam(k) = floor((dateExam(k) +18)/5)+1 + mintmp;
-                           idTableExam2(k) = floor((dateExam(k) +18)/5)+1 + mintmp*2;
-                       end
-                       if(i==2)
-                           fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam), '-+b');hold on;
-                       else
-                           fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam2), '-+b');hold on;
-                       end
+                        dateExam = [23,25,51,53,79,81,114,116,149,151,170,200,206,240];
+                        idTableExam0 = zeros(size(dateExam));
+                        idTableExam = zeros(size(dateExam));
+                        idTableExam2 = zeros(size(dateExam));
+                        %knowing that data goes from -18 -13 ... 256 (all 5 days) ==> 55
+                        for k =1:size(dateExam,2)
+                            idTableExam0(k) = floor((dateExam(k) +18)/5)+1;
+                            idTableExam(k) = floor((dateExam(k) +18)/5)+1 + mintmp;
+                            idTableExam2(k) = floor((dateExam(k) +18)/5)+1 + mintmp*2;
+                        end
+                        if(i==2)
+                            fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam), '-+b');hold on;
+                        else
+                            fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam2), '-+b');hold on;
+                        end
                     end
                 else
                     for j = 1 : max(promp.traj.nbTraj,10)
@@ -133,6 +136,19 @@ for i=reshape(interval',1,[])
         %  list1 =  {'sep','oct','nov','dec','jan','feb','mar','apr','may','jun','jul','aug'};
         % xticks([1 2 3 4 5 6 7 8 9 10 11 12 13 14])
         %  xticklabels(list1);
+        if(flag_persona14d==1)
+            stickss = zeros(1,traj.totTime(1)/3);
+            stickss2 = zeros(1,traj.totTime(1)/3);
+            cptt=1;
+            for ist =1:3:traj.totTime(1)
+                stickss(cptt) = ist;
+                stickss2(cptt) = traj.realTime{1}(ist);
+                cptt=cptt+1;
+            end
+            xticks(stickss);
+            xticklabels(stickss2);
+        end
+        
         
         if(i==interval(nbInputs))%promp.traj.nbInput(1))
             xlabel('Mois', 'fontsize', 20);
@@ -145,33 +161,30 @@ for i=reshape(interval',1,[])
                 if(length(col2) ==3)
                     fig(size(fig,2) + 1) =  plot([promp.traj.alpha(j):promp.traj.alpha(j):s_ref], promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i), 'color', col2,'linewidth',0.5);hold on;
                 else
-                  if(flag_oulad==1 && i>1) %case mark or delays in oulad dataset
-                       dateExam = [23,25,51,53,79,81,114,116,149,151,170,200,206,240];
-                       idTableExam0 = zeros(size(dateExam));
-                       idTableExam = zeros(size(dateExam));
-                       idTableExam2 = zeros(size(dateExam));
-                       %knowing that data goes from -18 -11 ... 261 (all 7 days) ==> 40
-                       for k =1:size(dateExam,2)
-                           idTableExam0(k) = floor((dateExam(k) +18)/7)+1;
-                           idTableExam(k) = floor((dateExam(k) +18)/7)+1 + mintmp;
-                           idTableExam2(k) = floor((dateExam(k) +18)/7)+1 + mintmp*2;
-                       end
-                       if(i==2)
-                           fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam), strrep(col2,':',':+'));hold on;
-                       else
-                           fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam2), strrep(col2,':',':+'));hold on;
-                       end  
-                  else  
-                    mintmp = s_ref;
-                    if(mintmp > promp.traj.totTime(j))
-                        mintmp = promp.traj.totTime(j);
-%                         if(promp.traj.alpha(j) ~=1)
-%                             display('erreuuuur');%%TODO retrouver pourquoi?
-%                         end
+                    if(flag_oulad==1 && i>1) %case mark or delays in oulad dataset
+                        dateExam = [23,25,51,53,79,81,114,116,149,151,170,200,206,240];
+                        idTableExam0 = zeros(size(dateExam));
+                        idTableExam = zeros(size(dateExam));
+                        idTableExam2 = zeros(size(dateExam));
+                        %knowing that data goes from -18 -11 ... 261 (all 7 days) ==> 40
+                        for k =1:size(dateExam,2)
+                            idTableExam0(k) = floor((dateExam(k) +18)/7)+1;
+                            idTableExam(k) = floor((dateExam(k) +18)/7)+1 + mintmp;
+                            idTableExam2(k) = floor((dateExam(k) +18)/7)+1 + mintmp*2;
+                        end
+                        if(i==2)
+                            fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam), strrep(col2,':',':+'));hold on;
+                        else
+                            fig(size(fig,2) + 1) =  plot(idTableExam0, promp.traj.y{j}(idTableExam2), strrep(col2,':',':+'));hold on;
+                        end
+                    else
+                        mintmp = s_ref;
+                        if(mintmp > promp.traj.totTime(j))
+                            mintmp = promp.traj.totTime(j);
+                        end
+                        ssize = mintmp / size(promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i),1);
+                        fig(size(fig,2) + 1) =  plot([ssize:ssize:mintmp], promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i), col2,'linewidth',0.5);hold on;
                     end
-                    ssize = mintmp / size(promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i),1);
-                    fig(size(fig,2) + 1) =  plot([ssize:ssize:mintmp], promp.traj.y{j}(1 + promp.traj.totTime(j)*(i-1) :promp.traj.totTime(j)*i), col2,'linewidth',0.5);hold on;
-                  end
                 end
             end
         end
@@ -186,6 +199,30 @@ for i=reshape(interval',1,[])
         set(gca, 'fontsize', 20);
         disG = size(fig,2);
         ylabel(list{i}, 'fontsize', 20);
+        if(flag_persona14d==1)
+            stickss = zeros(1,promp.traj.totTime(1)/3);
+            stickss2 = zeros(1,promp.traj.totTime(1)/3);
+            cptt=1;
+            for ist =1:3:promp.traj.totTime(1)
+                stickss(cptt) = ist;
+                stickss2(cptt) = promp.traj.realTime{1}(ist);
+                cptt=cptt+1;
+            end
+            xticks(stickss);
+            xticklabels(stickss2);
+        end
+        if(flag_persona14d==1)
+            stickss = zeros(1,promp.traj.totTime(1)/3);
+            stickss2 = zeros(1,promp.traj.totTime(1)/3);
+            cptt=1;
+            for ist =1:3:promp.traj.totTime(1)
+                stickss(cptt) = ist;
+                stickss2(cptt) = promp.traj.realTime{1}(ist);
+                cptt=cptt+1;
+            end
+            xticks(stickss);
+            xticklabels(stickss2);
+        end
         %list1 = [1:30:300];
         
         %list1 =  {'sep','oct','nov','dec','jan','feb','mar','apr','may','jun','jul','aug'};
@@ -199,18 +236,18 @@ for i=reshape(interval',1,[])
     
     set(gca, 'fontsize', 20);
     if(flag_yminAndMax)
-       minn = yminn(cpt);
-       maxx = ymax(cpt);
-       ylim([minn, maxx]); 
+        minn = yminn(cpt);
+        maxx = ymax(cpt);
+        ylim([minn, maxx]);
     elseif(flag_ymin)
-       ytmp = ylim;
-       minn = yminn(cpt);
-       ylim([minn, ytmp(2)]);
+        ytmp = ylim;
+        minn = yminn(cpt);
+        ylim([minn, ytmp(2)]);
     end
     if(flag_xminAndMax)
-       minn = xminn(cpt);
-       maxx = xmax(cpt);
-       xlim([minn, maxx]); 
+        minn = xminn(cpt);
+        maxx = xmax(cpt);
+        xlim([minn, maxx]);
     end
     
     
