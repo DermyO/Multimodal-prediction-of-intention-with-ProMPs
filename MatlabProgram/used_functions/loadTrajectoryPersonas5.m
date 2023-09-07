@@ -15,12 +15,15 @@ function [tt] = loadTrajectoryPersonas5(PATH, trajectory,nbInput, varargin)
 % This function add to the object "trajectory", the input variable (score ; delay) using the student id.
 name = 'DDD_2013B';
 type = 1;
+flag_perClick = false;
 if (~isempty(varargin))
     for i=1:length(varargin)
         if(strcmp(varargin{i},'type')==1)
             type=0;
         elseif(strcmp(varargin{i},'name')==1)
             name = varargin{i+1};
+        elseif(strcmp(varargin{i}, 'perClick')==1)%if we normalize according to click per 14d
+            flag_perClick = true;
         end
     end
 end
@@ -46,7 +49,9 @@ else %%%BBB_2013B
     scores = data_tot{1}.data(:,7:17);
     delays = data_tot{1}.data(:,18:28);
 end
-
+if(flag_perClick==1)
+     dateClick = [14,28,42,56,70,84,98,112,126,140,154,168,182,196,210,224,238,252];
+end
 %changing trajectory input
 tt.nbInput = nbInput;
 tt.label = trajectory.label;
